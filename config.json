@@ -1,0 +1,21 @@
+{
+  "projectName": "WeatherWise Planner",
+  "api": {
+    "baseUrl": "/api"
+  },
+  "ui": {
+    "defaultConditions": [
+      "very_hot",
+      "very_cold",
+      "very_wet",
+      "very_windy",
+      "very_uncomfortable"
+    ],
+    "defaultDate": "07-15"
+  },
+  "data": {
+    "demoMode": true,
+    "attribution": "Data provided by NASA Earth Observing System Data and Information System (EOSDIS) via GES DISC",
+    "sourceUrl": "https://disc.gsfc.nasa.gov/"
+  }
+}

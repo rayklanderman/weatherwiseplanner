@@ -1,0 +1,14 @@
+node_modules
+.vscode
+.DS_Store
+.env
+coverage
+.temp
+.vite
+*.log
+backend/__pycache__
+.venv
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+dist/
