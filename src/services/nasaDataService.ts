@@ -21,7 +21,7 @@ export const queryWeatherRisk = async (
   locationName?: string
 ): Promise<WeatherQueryResponse> => {
   const payload = buildQueryPayload(lat, lon, dateOfYear, conditions, locationName);
-  const response = await fetch(`${API_BASE_URL}/api/query`, {
+  const response = await fetch(`${API_BASE_URL}/query`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
