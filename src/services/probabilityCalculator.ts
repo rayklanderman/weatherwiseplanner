@@ -10,9 +10,9 @@ const CONDITION_LABELS: Record<WeatherConditionKey, string> = {
 
 const SUMMARY_TEMPLATES = {
   high: (label: string, probability: number) =>
-    `${probability}% odds of ${label.toLowerCase()} for this date window—build contingencies.`,
+    `${probability}% historical odds of ${label.toLowerCase()} for this date window—build contingencies.`,
   medium: (label: string, probability: number) =>
-    `${label} shows up about ${probability}% of the time across the record.`,
+    `${label} appears about ${probability}% of historical seasons for this window.`,
   low: (label: string, probability: number) =>
     `${label} is historically uncommon here (~${probability}%).`
 };

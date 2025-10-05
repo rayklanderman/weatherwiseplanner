@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { WeatherQueryResponse, WeatherSummary, WeatherConditionKey } from "../types/weather";
 import { conditionDisplay } from "../constants/conditions";
+import { RiskGauge } from "./RiskGauge";
 
 interface ResultsPanelProps {
   isLoading: boolean;
@@ -9,11 +10,29 @@ interface ResultsPanelProps {
   summaries: WeatherSummary[];
 }
 
-const probabilityColor = (probability: number): string => {
-  if (probability >= 50) return "bg-rose-500";
-  if (probability >= 25) return "bg-amber-400";
-  if (probability >= 10) return "bg-emerald-400";
-  return "bg-slate-300";
+const probabilityPalette = (probability: number) => {
+  if (probability >= 50) {
+    return {
+      badge: "bg-rose-500",
+      stroke: "stroke-rose-500"
+    };
+  }
+  if (probability >= 25) {
+    return {
+      badge: "bg-amber-400",
+      stroke: "stroke-amber-400"
+    };
+  }
+  if (probability >= 10) {
+    return {
+      badge: "bg-emerald-400",
+      stroke: "stroke-emerald-400"
+    };
+  }
+  return {
+    badge: "bg-slate-300",
+    stroke: "stroke-slate-300"
+  };
 };
 
 export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanelProps) => {
@@ -58,9 +77,20 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
               {data.query.location.name ?? "Selected location"} · {data.query.date_of_year}
             </p>
           </div>
-          <div className="text-xs text-slate-500">
+          <div className="text-xs text-slate-500 text-right space-y-1">
             <p>{data.metadata.data_source}</p>
             <p>{data.metadata.time_range}</p>
+            {data.metadata.dataset_name && <p>Dataset: {data.metadata.dataset_name}</p>}
+            {typeof data.metadata.window_days !== "undefined" && (
+              <p>Window ±{data.metadata.window_days} days</p>
+            )}
+            {typeof data.metadata.samples !== "undefined" && <p>{data.metadata.samples} samples</p>}
+            {data.metadata.grid_point && (
+              <p>
+                Grid cell {data.metadata.grid_point.lat.toFixed(2)}, {" "}
+                {data.metadata.grid_point.lon.toFixed(2)}
+              </p>
+            )}
           </div>
         </div>
 
@@ -69,8 +99,9 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
             WeatherConditionKey,
             (typeof data.results)[WeatherConditionKey]
           ]>).map(([condition, result]) => {
-            if (!result) return null;
+            if (!result || result.probability_percent == null) return null;
             const meta = conditionDisplay(condition);
+            const palette = probabilityPalette(result.probability_percent);
             return (
               <div
                 key={condition}
@@ -83,7 +114,7 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
                     meta.gradient
                   )}
                 />
-                <div className="relative flex items-start justify-between gap-3">
+                <div className="relative flex items-start justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <span
                       className={clsx(
@@ -97,26 +128,30 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
                     </span>
                     <dt className="text-base font-semibold text-slate-800">{meta.label}</dt>
                   </div>
+                  <RiskGauge
+                    value={result.probability_percent}
+                    strokeClass={palette.stroke}
+                    label={meta.label}
+                  />
+                </div>
+                <dd className="relative mt-3 space-y-3 text-sm text-slate-600">
                   <span
                     className={clsx(
                       "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white",
-                      probabilityColor(result.probability_percent)
+                      palette.badge
                     )}
                   >
-                    {result.probability_percent}% chance
+                    {result.probability_percent}% historical likelihood
                   </span>
-                </div>
-                <dd className="relative mt-3 space-y-3 text-sm text-slate-600">
-                  <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/70">
-                    <div
-                      className="absolute inset-y-0 left-0 rounded-full bg-brand/70"
-                      style={{ width: `${Math.min(result.probability_percent, 100)}%` }}
-                    />
-                  </div>
-                  <p>
-                    Threshold: <strong>{result.threshold.value}</strong> {result.threshold.unit}
-                  </p>
+                  {result.threshold && (
+                    <p>
+                      Threshold: <strong>{result.threshold.value}</strong> {result.threshold.unit}
+                    </p>
+                  )}
                   {result.trend && <p className="font-medium text-brand-dark">Trend: {result.trend}</p>}
+                  {result.description && (
+                    <p className="text-xs text-slate-500">{result.description}</p>
+                  )}
                 </dd>
               </div>
             );

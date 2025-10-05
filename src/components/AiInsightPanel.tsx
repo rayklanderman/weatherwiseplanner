@@ -8,11 +8,6 @@ interface AiInsightPanelProps {
   isQueryLoading: boolean;
 }
 
-const DEFAULT_PROMPT = "Focus on schedule adjustments, resource planning, and risk mitigation for event operations.";
-
-const fallbackInsightMessage =
-  "Generate an AI briefing once you have climate probabilities. The assistant will summarize NASA-based risks and action items.";
-
 export const AiInsightPanel = ({ data, summaries, isQueryLoading }: AiInsightPanelProps) => {
   const { insight, isLoading, error, generateInsight, reset } = useAiInsights();
   const [userPrompt, setUserPrompt] = useState("");
@@ -61,7 +56,7 @@ export const AiInsightPanel = ({ data, summaries, isQueryLoading }: AiInsightPan
   };
 
   const handleCopy = async () => {
-    if (!insight) {
+    if (!insight || typeof navigator === "undefined" || !navigator.clipboard) {
       return;
     }
 
@@ -77,80 +72,120 @@ export const AiInsightPanel = ({ data, summaries, isQueryLoading }: AiInsightPan
   };
 
   const disabled = !data || isQueryLoading || isLoading;
-  const buttonLabel = hasGenerated ? "Regenerate briefing" : "Generate AI briefing";
+  const buttonLabel = hasGenerated ? "🔄 Ask AI Again" : "🤖 Get AI Farming Advice NOW!";
 
   return (
-    <section className="rounded-2xl border border-white/60 bg-white/80 p-6 shadow-lg ring-1 ring-slate-200/60 backdrop-blur">
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-slate-800">AI planner briefing</h2>
-            <p className="text-sm text-slate-600">
-              Tap into Together AI for a 2-3 sentence narrative grounded in NASA climate probabilities. Adjust the
-              optional prompt to tailor the advice.
-            </p>
+    <section className="rounded-2xl border-4 border-pink-400 bg-gradient-to-br from-pink-50 via-white to-rose-50 p-8 shadow-2xl">
+      <div className="flex flex-col gap-6">
+        {/* Header with BIG button */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-5xl">🤖</span>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">AI Farming Assistant</h2>
+              <p className="text-sm text-slate-700">
+                ⚡ Instant advice in under 1 second • Powered by Groq AI
+              </p>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleGenerate}
-              disabled={disabled}
-              className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-slate-300"
-            >
-              {isLoading ? "Generating..." : buttonLabel}
-            </button>
-            {insight && (
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="rounded-xl border border-brand/30 px-3 py-2 text-sm font-semibold text-brand-dark transition hover:bg-brand/10"
-              >
-                {copied ? "Copied" : "Copy"}
-              </button>
+          
+          {/* HUGE GENERATE BUTTON */}
+          <button
+            type="button"
+            onClick={handleGenerate}
+            disabled={disabled}
+            className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-600 px-8 py-6 text-2xl font-bold text-white shadow-xl transition hover:scale-105 hover:shadow-2xl disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-400 disabled:hover:scale-100"
+          >
+            {isLoading ? (
+              <>
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <span>AI is thinking...</span>
+              </>
+            ) : (
+              <>
+                <span>{buttonLabel}</span>
+                {!disabled && <span className="text-3xl">→</span>}
+              </>
             )}
-          </div>
+          </button>
         </div>
 
-        <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Custom prompt (optional)
+        {/* Example questions */}
+        <div className="rounded-xl bg-blue-50 p-4">
+          <p className="mb-2 font-semibold text-blue-900">💡 Ask questions like:</p>
+          <ul className="space-y-1 text-sm text-blue-800">
+            <li>• "Is this good weather for potato farming?"</li>
+            <li>• "What crops should I plant on this date?"</li>
+            <li>• "Will there be enough rain for maize?"</li>
+            <li>• "Should I worry about frost damage?"</li>
+          </ul>
+        </div>
+
+        {/* Optional custom prompt */}
+        <details className="group">
+          <summary className="cursor-pointer text-sm font-semibold text-slate-700 hover:text-brand">
+            ➕ Add custom question (optional)
+          </summary>
           <textarea
             value={userPrompt}
             onChange={(event) => setUserPrompt(event.target.value)}
-            placeholder={DEFAULT_PROMPT}
+            placeholder="e.g., 'I want to plant potatoes. Is the weather suitable? What risks should I prepare for?'"
             rows={3}
-            className="w-full rounded-xl border border-slate-200/70 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-light disabled:bg-slate-100"
+            className="mt-2 w-full rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:bg-slate-100"
             disabled={!data}
           />
-        </label>
+        </details>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && (
+          <div className="rounded-lg bg-red-50 p-4">
+            <p className="font-semibold text-red-900">⚠️ Error:</p>
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        )}
 
-        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-4 text-sm text-slate-700">
+        {/* AI Response Box */}
+        <div className="min-h-[200px] rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-inner">
           {isLoading ? (
-            <div className="space-y-2">
-              <div className="h-3 w-5/6 animate-pulse-slow rounded-full bg-slate-200" />
-              <div className="h-3 w-4/6 animate-pulse-slow rounded-full bg-slate-200" />
-              <div className="h-3 w-2/3 animate-pulse-slow rounded-full bg-slate-200" />
+            <div className="space-y-3">
+              <div className="h-4 w-5/6 animate-pulse rounded-full bg-slate-200" />
+              <div className="h-4 w-4/6 animate-pulse rounded-full bg-slate-200" />
+              <div className="h-4 w-3/4 animate-pulse rounded-full bg-slate-200" />
+              <div className="h-4 w-2/3 animate-pulse rounded-full bg-slate-200" />
             </div>
           ) : insight ? (
-            <div className="space-y-2">
-              {insight.split(/\n+/).map((paragraph, index) => (
-                <p key={index} className="leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-slate-900">🌾 AI Recommendations:</h3>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="rounded-lg border-2 border-green-600 bg-green-50 px-4 py-2 text-sm font-semibold text-green-900 transition hover:bg-green-100"
+                >
+                  {copied ? "✅ Copied!" : "📋 Copy Advice"}
+                </button>
+              </div>
+              <div className="space-y-3 text-base leading-relaxed text-slate-800">
+                {insight.split(/\n+/).map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
             </div>
           ) : (
-            <p className="leading-relaxed text-slate-600">
-              {data ? fallbackInsightMessage : "Pick a location and date, then generate NASA-based probabilities to unlock the AI briefing."}
-            </p>
+            <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+              <span className="text-6xl opacity-20">🤖</span>
+              <p className="text-lg font-medium text-slate-600">
+                {data
+                  ? "Click the button above to get instant farming advice!"
+                  : "📍 First, select a location and date on the map above"}
+              </p>
+            </div>
           )}
         </div>
 
-        <p className="text-xs text-slate-500">
-          Requires a Together API key stored in your local <code>.env.local</code>. Responses reference historical trends rather
-          than deterministic forecasts.
-        </p>
+        <div className="rounded-lg bg-slate-100 p-3 text-xs text-slate-600">
+          <strong>How it works:</strong> Our AI analyzes the NASA weather data above and gives you personalized farming recommendations in plain language. 
+          Responses are based on 40+ years of historical patterns, not forecasts.
+        </div>
       </div>
     </section>
   );

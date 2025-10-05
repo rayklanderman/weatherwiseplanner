@@ -14,6 +14,13 @@ const config = {
           DEFAULT: "#0B7285",
           light: "#4FC3D6",
           dark: "#074450"
+        },
+        nasa: {
+          blue: "#0B3D91",
+          red: "#FC3D21",
+          white: "#FFFFFF",
+          black: "#000000",
+          gray: "#4F4F4F"
         }
       },
       keyframes: {

@@ -12,9 +12,10 @@ export interface WeatherThreshold {
 
 export interface WeatherConditionResult {
   probability_percent: number;
-  threshold: WeatherThreshold;
-  historical_values: number[];
-  trend: string;
+  threshold?: WeatherThreshold;
+  historical_values?: number[];
+  trend?: string;
+  description?: string;
 }
 
 export interface WeatherQueryInput {
@@ -35,6 +36,13 @@ export interface WeatherQueryResponse {
     time_range: string;
     units: string;
     generated_at: string;
+    window_days?: number;
+    samples?: number;
+    grid_point?: {
+      lat: number;
+      lon: number;
+    };
+    dataset_name?: string;
   };
 }
 

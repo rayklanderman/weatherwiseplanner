@@ -134,7 +134,7 @@ function App() {
         </main>
 
         {/* AI Insights Panel - Prominent Section */}
-        <AiChatPanel data={data} summaries={summaries} isQueryLoading={isLoading} lat={lat} lon={lon} locationName={locationName} dateOfYear={dateOfYear} />
+        <AiInsightPanel data={data} summaries={summaries} isQueryLoading={isLoading} />
 
         <footer className="pb-8 text-center text-xs text-slate-500">
           🛰️ Built with NASA MERRA-2 satellite data. Perfect for farmers planning crops months ahead.

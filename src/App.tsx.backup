@@ -6,7 +6,10 @@ import { ChartDisplay } from "./components/ChartDisplay";
 import { ExportButton } from "./components/ExportButton";
 import { useWeatherQuery } from "./hooks/useWeatherQuery";
 import { useGeolocation } from "./hooks/useGeolocation";
-import { AiChatPanel } from "./components/AiChatPanel";
+import { InsightsStrip } from "./components/InsightsStrip";
+import { PlannerTips } from "./components/PlannerTips";
+import { SatelliteSnapshot } from "./components/SatelliteSnapshot";
+import { AiInsightPanel } from "./components/AiInsightPanel";
 import config from "../config.json";
 import { WeatherConditionKey } from "./types/weather";
 
@@ -31,7 +34,6 @@ function App() {
   const [dateOfYear, setDateOfYear] = useState(defaultDate);
   const [conditions, setConditions] = useState<WeatherConditionKey[]>(defaultConditions);
   const [activeCondition, setActiveCondition] = useState<WeatherConditionKey | null>(null);
-  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     if (geo.lat != null && geo.lon != null) {
@@ -99,14 +101,21 @@ function App() {
               </span>
             ))}
           </div>
+          <InsightsStrip data={data} summaries={summaries} isLoading={isLoading} />
           <p className="text-xs text-slate-500">
-            🛰️ Data provided by NASA Earth Observing System Data and Information System (EOSDIS) via GES DISC.
+            Data provided by NASA Earth Observing System Data and Information System (EOSDIS) via GES DISC.
           </p>
         </header>
+
+  <PlannerTips data={data} summaries={summaries} isLoading={isLoading} />
+
+  <AiInsightPanel data={data} summaries={summaries} isQueryLoading={isLoading} />
 
         <main className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
           <div className="space-y-8">
             <MapSelector lat={lat} lon={lon} onChange={handleMapChange} />
+
+            <SatelliteSnapshot lat={lat} lon={lon} dateOfYear={dateOfYear} />
 
             <section className="rounded-2xl border border-white/60 bg-white/80 p-6 shadow-lg ring-1 ring-slate-200/60 backdrop-blur">
               <div className="grid gap-6 md:grid-cols-2">
@@ -133,11 +142,9 @@ function App() {
           <ResultsPanel isLoading={isLoading} error={error} data={data} summaries={summaries} />
         </main>
 
-        {/* AI Insights Panel - Prominent Section */}
-        <AiChatPanel data={data} summaries={summaries} isQueryLoading={isLoading} lat={lat} lon={lon} locationName={locationName} dateOfYear={dateOfYear} />
-
         <footer className="pb-8 text-center text-xs text-slate-500">
-          🛰️ Built with NASA MERRA-2 satellite data. Perfect for farmers planning crops months ahead.
+          Built for hackathon demos. Upgrade ideas: connect live to MERRA-2 via OPeNDAP, add seasonal comparisons, and
+          personalize thresholds for different activity types.
         </footer>
       </div>
     </div>

@@ -87,7 +87,7 @@ export const ChartDisplay = ({ data, activeCondition, onActiveConditionChange }:
         </div>
         <div className="flex flex-wrap gap-2">
           {availableConditions.map((entry: ConditionEntry) => {
-            const [condition] = entry;
+            const [condition, result] = entry;
             return (
               <button
                 key={condition}
@@ -100,6 +100,11 @@ export const ChartDisplay = ({ data, activeCondition, onActiveConditionChange }:
                 }`}
               >
                 {conditionLabel(condition)}
+                {result?.threshold && (
+                  <span className="ml-1 text-xs text-brand-light/90">
+                    · ≥{result.threshold.value} {result.threshold.unit}
+                  </span>
+                )}
               </button>
             );
           })}

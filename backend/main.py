@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 from .data_fetcher import get_fetcher
-from .ai_insights import TogetherClientError, call_together_api
+from .groq_insights import GroqClientError, call_groq_api
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -94,7 +94,7 @@ async def query_weather(payload: WeatherQuery) -> dict:
     if not payload.conditions:
         raise HTTPException(status_code=400, detail="Select at least one weather condition.")
 
-    fetcher = get_fetcher(force_mock=True)
+    fetcher = get_fetcher()
     response = fetcher.query(
         lat=payload.location.lat,
         lon=payload.location.lon,
@@ -116,11 +116,11 @@ async def query_weather(payload: WeatherQuery) -> dict:
 @app.post("/insights")
 async def generate_ai_insight(payload: InsightRequest) -> dict[str, str]:
     try:
-        insight = call_together_api(
+        insight = call_groq_api(
             payload.model_dump(by_alias=True),
             user_prompt=payload.user_prompt
         )
-    except TogetherClientError as exc:  # pragma: no cover - external service
+    except GroqClientError as exc:  # pragma: no cover - external service
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     return {

@@ -30,7 +30,11 @@ export const useWeatherQuery = ({
   const [data, setData] = useState<WeatherQueryResponse>();
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
-  const demoMode = config.data.demoMode;
+  const envDemoMode = typeof import.meta.env.VITE_WEATHERWISE_DEMO_MODE !== "undefined"
+    ? import.meta.env.VITE_WEATHERWISE_DEMO_MODE === "true"
+    : undefined;
+
+  const demoMode = envDemoMode ?? config.data.demoMode;
 
   const fetchData = useCallback(async () => {
     if (lat == null || lon == null || selectedConditions.length === 0) {

@@ -57,11 +57,26 @@ python -m uvicorn backend.main:app --reload
 
 The frontend proxies `/api/*` to `http://localhost:8000` during development.
 
+> 💡 **AI insights require a Together API key.** Create a `.env.local` at the project root with `TOGETHER_API_KEY=your_key`. Restart the backend after adding or updating the key.
+
 ### 5. Swap in real NASA data (stretch goal)
 
-1. Download a subset of the [MERRA-2](https://disc.gsfc.nasa.gov/) dataset as NetCDF and place it under `public/sample_data/merra2_sample_denver_2018_2023.nc`.
-2. Update `backend/data_fetcher.py` to flip `use_mock=False` or detect your dataset.
-3. Extend the transformation logic to compute exceedance probabilities via xarray (see TODOs below).
+1. [Create a free NASA Earthdata account](https://urs.earthdata.nasa.gov/users/new) and configure your `~/.netrc` for authenticated OPeNDAP access.
+2. Download a subset of the [MERRA-2](https://disc.gsfc.nasa.gov/) reanalysis (recommended collection: `MERRA2_100.tavg1_2d_slv_Nx`) as NetCDF, or note the OPeNDAP URL you want to query.
+3. Place the NetCDF under `public/sample_data/` **or** set an environment variable pointing to a local/remote dataset:
+
+    ```powershell
+    # .env file (frontend) for Vite
+    VITE_WEATHERWISE_DEMO_MODE=false
+
+    # .env file (backend) for FastAPI
+    WEATHERWISE_DATASET="D:/data/merra2_subset.nc"   # or an https:// OPeNDAP endpoint
+    WEATHERWISE_FORCE_MOCK=0
+    WEATHERWISE_WINDOW_DAYS=3                         # +/- window around the requested date
+    ```
+
+4. Restart the backend. The API now computes probabilities from the MERRA-2 variables (`T2M_MAX`, `T2M_MIN`, `PRECTOT`, `WS10M`, `T2M`).
+5. Reload the frontend; the CSV/JSON exports reflect the live dataset instead of the static mock payload.
 
 ## Project structure
 
@@ -86,6 +101,7 @@ Weatherwise Planner/
     ├── main.py
     ├── data_fetcher.py
     └── requirements.txt
+    └── .env.example (configure `WEATHERWISE_DATASET`, `WEATHERWISE_WINDOW_DAYS`, etc.)
 ```
 
 ## NASA attribution
@@ -94,6 +110,8 @@ Weatherwise Planner/
 
 Include this credit in any deployment or presentation.
 
+For a step-by-step walkthrough, see [`docs/real-data.md`](docs/real-data.md).
+
 ## Roadmap & realistic improvements
 
 - 🔌 **Live MERRA-2 integration** — authenticate with NASA Earthdata, call OPeNDAP using xarray, and persist a cache per lat/lon/day.
@@ -101,6 +119,12 @@ Include this credit in any deployment or presentation.
 - 💬 **Scenario storytelling** — add AI-powered explanations (“Expect muggy afternoons: pack cooling towels”).
 - ☁️ **Seasonal overlays** — compare multiple dates on the histogram for shoulder-season planning.
 - 📶 **Offline-ready PWA** — allow park rangers to preload insights before heading into low-connectivity zones.
+
+## Real-world scenarios
+
+- 🌽 **Farmer (Nakuru, Kenya)** — “April 10–20 has an 85% historical likelihood of days above 15 °C, making the window suitable for maize planting.”
+- 💒 **Event planner (Miami, FL)** — “July 20 shows a 70% historical likelihood of heat index ≥95 °F, so consider indoor or evening venues.”
+- 🥾 **Backpacker (Rocky Mountains)** — “October 5 has only a 5% historical chance of snow but a 40% likelihood of high winds—pack wind protection.”
 
 ## Testing & quality
 

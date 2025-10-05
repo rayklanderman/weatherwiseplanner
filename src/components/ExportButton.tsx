@@ -13,9 +13,9 @@ export const ExportButton = ({ data }: ExportButtonProps) => {
 
   return (
     <Menu as="div" className="relative inline-block text-left">
-      <Menu.Button className="inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-brand-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-light">
-        <ArrowDownTrayIcon className="h-4 w-4" />
-        Export
+      <Menu.Button className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-4 text-lg font-bold text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400">
+        <ArrowDownTrayIcon className="h-6 w-6" />
+        <span>📥 Download Data</span>
       </Menu.Button>
       <Transition
         as={Fragment}
@@ -26,15 +26,19 @@ export const ExportButton = ({ data }: ExportButtonProps) => {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-xl border border-slate-200 bg-white p-1 text-sm shadow-lg focus:outline-none">
+        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl border-2 border-slate-200 bg-white p-2 shadow-2xl focus:outline-none">
           <Menu.Item>
             {({ active }: { active: boolean }) => (
               <button
                 type="button"
-                className={`w-full rounded-lg px-3 py-2 text-left ${active ? "bg-brand/10 text-brand-dark" : "text-slate-700"}`}
+                className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-base font-semibold ${active ? "bg-emerald-50 text-emerald-900" : "text-slate-700"}`}
                 onClick={() => exportAsCSV(data)}
               >
-                Download CSV
+                <span className="text-2xl">📊</span>
+                <div>
+                  <div>Download CSV</div>
+                  <div className="text-xs font-normal text-slate-500">For Excel/Sheets</div>
+                </div>
               </button>
             )}
           </Menu.Item>
@@ -42,10 +46,14 @@ export const ExportButton = ({ data }: ExportButtonProps) => {
             {({ active }: { active: boolean }) => (
               <button
                 type="button"
-                className={`w-full rounded-lg px-3 py-2 text-left ${active ? "bg-brand/10 text-brand-dark" : "text-slate-700"}`}
+                className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-base font-semibold ${active ? "bg-emerald-50 text-emerald-900" : "text-slate-700"}`}
                 onClick={() => exportAsJSON(data)}
               >
-                Download JSON
+                <span className="text-2xl">💾</span>
+                <div>
+                  <div>Download JSON</div>
+                  <div className="text-xs font-normal text-slate-500">For developers</div>
+                </div>
               </button>
             )}
           </Menu.Item>

@@ -34,10 +34,10 @@ export const exportAsCSV = (payload: WeatherQueryResponse) => {
       return [
         key,
         value.probability_percent,
-        value.threshold.value,
-        value.threshold.unit,
+        value.threshold?.value ?? "",
+        value.threshold?.unit ?? "",
         value.trend ?? "",
-        `"${value.historical_values.join(";")}"`
+        value.historical_values ? `"${value.historical_values.join(";")}"` : ""
       ].join(",");
     })
     .filter(Boolean);
@@ -48,10 +48,14 @@ export const exportAsCSV = (payload: WeatherQueryResponse) => {
     `time_range,${metadata.time_range}`,
     `units,${metadata.units}`,
     `generated_at,${metadata.generated_at}`,
+    metadata.dataset_name ? `dataset_name,${metadata.dataset_name}` : null,
+    typeof metadata.window_days !== "undefined" ? `window_days,${metadata.window_days}` : null,
+    typeof metadata.samples !== "undefined" ? `samples,${metadata.samples}` : null,
+    metadata.grid_point ? `grid_point,"${metadata.grid_point.lat},${metadata.grid_point.lon}"` : null,
     `query_location_lat,${query.location.lat}`,
     `query_location_lon,${query.location.lon}`,
     `query_date_of_year,${query.date_of_year}`
-  ];
+  ].filter(Boolean) as string[];
 
   const csvContent = [header.join(","), ...(rows as string[]), ...metadataLines].join("\n");
   const timestamp = new Date().toISOString().split("T")[0];
