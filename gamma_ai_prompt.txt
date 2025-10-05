@@ -1,0 +1,58 @@
+Create a 7-slide presentation for WeatherWise Planner, NASA Space Apps Challenge 2024. Use NASA colors: blue #0B3D91, red #FC3D21, white. Modern tech style, 16:9 format.
+
+SLIDE 1 - TITLE
+Title: WeatherWise Planner
+Subtitle: Smart Planning Powered by 40+ Years of NASA Earth Data
+Tagline: Plan Your Future by Understanding the Past
+Visual: Earth from space with weather overlay
+Include NASA Space Apps 2024 logo
+
+SLIDE 2 - PROBLEM
+Title: The Challenge We're Solving
+Question: How do you plan outdoor events months ahead when you can't predict the weather?
+Visuals: Worried farmer + event planner
+Stats: 62% of outdoor events face weather disruptions, Climate costs $306B annually
+Pain points: Farmers lose crops, events get disrupted, billions lost to poor planning
+
+SLIDE 3 - SOLUTION
+Title: Historical Risk = Future Insight
+Description: WeatherWise uses 40+ years of NASA MERRA-2 satellite data for any location and date
+Visual: App interface screenshot with map, date picker, condition toggles
+Process: Pick Location → Choose Date → See Historical Risks → Get AI Advice
+
+SLIDE 4 - NASA DATA
+Title: Powered by NASA Earth Observations
+Data source: MERRA-2 Reanalysis 1980-Present
+Flow: NASA Satellites → MERRA-2 Database → WeatherWise → User Insights
+We track: Temperature extremes, Heavy rain, High winds, Humidity levels
+Badge: 40+ Years of Validated Climate Data
+
+SLIDE 5 - AI INSIGHTS
+Title: Smart Analysis, Simple Advice
+Technology: Groq AI transforms satellite data into recommendations
+Example chat:
+User: "Should I plant corn April 15th in Iowa?"
+AI: "Hard freeze risk 23%. Wait until April 25th when risk drops to 5%. Best window: April 25-May 5"
+Features: Real-time calculations, Alternative suggestions, Trend charts, Export data
+
+SLIDE 6 - FEATURES & IMPACT
+Title: Making Climate Data Accessible
+Features in grid:
+- Interactive Maps: Click anywhere on Earth
+- Risk Analytics: Probability percentages
+- AI Insights: Natural language queries
+- Export Data: CSV/JSON downloads
+Impact: Farmers reduce losses, Event planners optimize dates, Enthusiasts plan with confidence
+Coverage: 195 countries, Free & Open Source
+
+SLIDE 7 - CALL TO ACTION
+Title: Try It Now
+Live demo: weatherwise.earth
+GitHub: github.com/rayklanderman/weatherwiseplanner
+Include QR code to live site
+Tech: React + FastAPI + NASA MERRA-2 + Groq AI
+Future: More variables, Mobile apps, Global community
+Goal: Reducing climate losses through data-driven planning
+Footer: NASA Space Apps Challenge 2024 | Making NASA Data Work for Everyone
+
+Design notes: Use high-quality satellite images, NASA branding, minimal text, data visualizations, professional fonts 24pt minimum, include icons, maintain NASA color scheme throughout.
