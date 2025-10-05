@@ -1,6 +1,15 @@
 /**
  * Geocoding service using OpenStreetMap Nominatim API
  * Free, no API key required
+ * 
+ * SUPPORTS WORLDWIDE LOCATIONS:
+ * - Cities: "London", "Tokyo", "Paris", "Mumbai", "Sydney"
+ * - Countries: "Germany", "Brazil", "Kenya", "Australia"
+ * - Regions: "Sahara Desert", "Amazon Rainforest", "Himalayas"
+ * - Addresses: "1600 Pennsylvania Avenue, Washington DC"
+ * - Natural language: "Eiffel Tower", "Great Barrier Reef"
+ * 
+ * Coverage: 220+ countries, millions of cities/landmarks
  */
 
 interface GeocodingResult {
@@ -54,35 +63,64 @@ export async function geocodeLocation(placeName: string): Promise<GeocodingResul
 }
 
 /**
- * Get US state coordinates (fallback for common states)
+ * Common locations cache for instant results (performance optimization)
+ * These return immediately without API call
+ * All other locations use OpenStreetMap Nominatim (worldwide coverage)
  */
-const US_STATES: Record<string, { lat: number; lon: number; name: string }> = {
-  delaware: { lat: 39.0, lon: -75.5, name: "Delaware" },
-  boston: { lat: 42.3601, lon: -71.0589, name: "Boston, MA" },
-  "new york": { lat: 40.7128, lon: -74.006, name: "New York, NY" },
-  california: { lat: 36.7783, lon: -119.4179, name: "California" },
-  texas: { lat: 31.9686, lon: -99.9018, name: "Texas" },
-  florida: { lat: 27.9944, lon: -81.7603, name: "Florida" },
-  arizona: { lat: 34.0489, lon: -111.0937, name: "Arizona" },
-  colorado: { lat: 39.5501, lon: -105.7821, name: "Colorado" },
-  denver: { lat: 39.7392, lon: -104.9903, name: "Denver, CO" },
+const COMMON_LOCATIONS: Record<string, { lat: number; lon: number; name: string }> = {
+  // US States & Cities
+  delaware: { lat: 39.0, lon: -75.5, name: "Delaware, USA" },
+  boston: { lat: 42.3601, lon: -71.0589, name: "Boston, MA, USA" },
+  "new york": { lat: 40.7128, lon: -74.006, name: "New York, NY, USA" },
+  california: { lat: 36.7783, lon: -119.4179, name: "California, USA" },
+  texas: { lat: 31.9686, lon: -99.9018, name: "Texas, USA" },
+  florida: { lat: 27.9944, lon: -81.7603, name: "Florida, USA" },
+  arizona: { lat: 34.0489, lon: -111.0937, name: "Arizona, USA" },
+  colorado: { lat: 39.5501, lon: -105.7821, name: "Colorado, USA" },
+  denver: { lat: 39.7392, lon: -104.9903, name: "Denver, CO, USA" },
+  
+  // Major World Cities
+  london: { lat: 51.5074, lon: -0.1278, name: "London, UK" },
+  paris: { lat: 48.8566, lon: 2.3522, name: "Paris, France" },
+  tokyo: { lat: 35.6762, lon: 139.6503, name: "Tokyo, Japan" },
+  dubai: { lat: 25.2048, lon: 55.2708, name: "Dubai, UAE" },
+  sydney: { lat: -33.8688, lon: 151.2093, name: "Sydney, Australia" },
+  mumbai: { lat: 19.0760, lon: 72.8777, name: "Mumbai, India" },
+  "sao paulo": { lat: -23.5505, lon: -46.6333, name: "São Paulo, Brazil" },
+  nairobi: { lat: -1.2921, lon: 36.8219, name: "Nairobi, Kenya" },
+  moscow: { lat: 55.7558, lon: 37.6173, name: "Moscow, Russia" },
+  beijing: { lat: 39.9042, lon: 116.4074, name: "Beijing, China" },
 };
 
 /**
- * Get coordinates for a location (with fallback to common US states)
+ * Get coordinates for ANY location worldwide
+ * 
+ * Examples that work:
+ * - "London" → London, UK
+ * - "Sahara" → Sahara Desert, Africa
+ * - "Amazon Rainforest" → Amazon, South America
+ * - "Great Barrier Reef" → Queensland, Australia
+ * - "Mount Everest" → Nepal/Tibet border
+ * - "Antarctica" → South Pole region
+ * 
+ * @param placeName - Any location name (city, country, landmark, address)
+ * @returns Coordinates and formatted name, or null if not found
  */
 export async function getCoordinates(
   placeName: string
 ): Promise<{ lat: number; lon: number; name: string } | null> {
-  // Try exact match in US states first (instant)
+  // Try common locations cache first (instant, no API call)
   const normalized = placeName.toLowerCase().trim();
-  if (US_STATES[normalized]) {
-    return US_STATES[normalized];
+  if (COMMON_LOCATIONS[normalized]) {
+    console.log(`📍 Found ${placeName} in cache (instant)`);
+    return COMMON_LOCATIONS[normalized];
   }
 
-  // Try Nominatim API
+  // Use OpenStreetMap Nominatim for worldwide coverage
+  console.log(`🌍 Geocoding ${placeName} via Nominatim API...`);
   const result = await geocodeLocation(placeName);
   if (result) {
+    console.log(`✅ Found: ${result.display_name}`);
     return {
       lat: result.lat,
       lon: result.lon,
@@ -90,5 +128,6 @@ export async function getCoordinates(
     };
   }
 
+  console.warn(`❌ Could not find location: ${placeName}`);
   return null;
 }
