@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAiInsights } from "../hooks/useAiInsights";
-import { WeatherQueryResponse, WeatherSummary } from "../types/weather";
+import { WeatherQueryResponse, WeatherSummary, WeatherConditionKey } from "../types/weather";
+import { parseUserIntent } from "../services/intentParser";
+import { getCoordinates } from "../services/geocoder";
 
 interface AiChatPanelProps {
   data?: WeatherQueryResponse;
@@ -10,6 +12,10 @@ interface AiChatPanelProps {
   lon: number | null;
   locationName?: string;
   dateOfYear: string;
+  // NEW: Callback props for updating app state
+  onLocationChange?: (lat: number, lon: number, name: string) => void;
+  onDateChange?: (date: string) => void;
+  onConditionsChange?: (conditions: WeatherConditionKey[]) => void;
 }
 
 interface Message {
@@ -21,25 +27,19 @@ interface Message {
 export const AiChatPanel = ({ 
   data, 
   summaries, 
-  isQueryLoading,
   lat,
   lon,
   locationName,
-  dateOfYear
+  dateOfYear,
+  onLocationChange,
+  onDateChange,
+  onConditionsChange
 }: AiChatPanelProps) => {
   const { insight, isLoading, error, generateInsight, reset } = useAiInsights();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [isParsingIntent, setIsParsingIntent] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const dataSignature = useMemo(() => {
-    if (!data) return "none";
-    return JSON.stringify({
-      query: data.query,
-      results: data.results,
-      metadata: data.metadata
-    });
-  }, [data]);
 
   // Auto-scroll to bottom
   const scrollToBottom = () => {
@@ -78,7 +78,7 @@ export const AiChatPanel = ({
 
   const handleSend = async () => {
     const trimmed = input.trim();
-    if (!trimmed || !data || isLoading) return;
+    if (!trimmed || isLoading) return;
 
     // Add user message
     const userMessage: Message = {
@@ -89,14 +89,106 @@ export const AiChatPanel = ({
     setMessages(prev => [...prev, userMessage]);
     setInput("");
 
-    // Generate AI response
-    await generateInsight({
-      query: data.query,
-      results: data.results,
-      metadata: data.metadata,
-      summaries,
-      userPrompt: trimmed
-    });
+    try {
+      // PHASE 1: Parse user intent (Llama 3.1 8B Instant - Fast!)
+      setIsParsingIntent(true);
+      const intent = await parseUserIntent(trimmed);
+      setIsParsingIntent(false);
+
+      console.log("🔍 Parsed intent:", intent);
+
+      // PHASE 2: Update app state based on intent
+      if (intent.query_type === "weather_query") {
+        // Update location if detected
+        if (intent.location && onLocationChange) {
+          const coords = await getCoordinates(intent.location);
+          if (coords) {
+            onLocationChange(coords.lat, coords.lon, coords.name);
+            
+            // Add system message about location change
+            setMessages(prev => [...prev, {
+              role: "system",
+              content: `📍 Location updated to **${coords.name}**`,
+              timestamp: new Date()
+            }]);
+          }
+        }
+
+        // Update date if detected
+        if (intent.dateStart && onDateChange) {
+          onDateChange(intent.dateStart);
+          
+          setMessages(prev => [...prev, {
+            role: "system",
+            content: `📅 Date updated to **${new Date(intent.dateStart!).toLocaleDateString()}**`,
+            timestamp: new Date()
+          }]);
+        }
+
+        // Update conditions if detected
+        if (intent.conditions && intent.conditions.length > 0 && onConditionsChange) {
+          // Map user-friendly condition names to WeatherConditionKey
+          const conditionMap: Record<string, WeatherConditionKey> = {
+            extremeHeat: "very_hot",
+            heat: "very_hot",
+            hot: "very_hot",
+            cold: "very_cold",
+            frost: "very_cold",
+            rain: "very_wet",
+            wet: "very_wet",
+            heavyRain: "very_wet",
+            flooding: "very_wet",
+            wind: "very_windy",
+            strongWind: "very_windy",
+            windy: "very_windy",
+            uncomfortable: "very_uncomfortable",
+          };
+          
+          const mappedConditions = intent.conditions
+            .map(c => conditionMap[c.toLowerCase()])
+            .filter(Boolean) as WeatherConditionKey[];
+          
+          if (mappedConditions.length > 0) {
+            onConditionsChange(mappedConditions);
+            
+            setMessages(prev => [...prev, {
+              role: "system",
+              content: `🌡️ Monitoring: **${mappedConditions.join(', ')}**`,
+              timestamp: new Date()
+            }]);
+          }
+        }
+
+        // Wait for data to update after state changes
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
+      // PHASE 3: Generate AI response (use existing hook - Llama 3.3 70B)
+      if (!data) {
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: "Please select a location on the map first, then I can help you analyze the weather data!",
+          timestamp: new Date()
+        }]);
+        return;
+      }
+
+      await generateInsight({
+        query: data.query,
+        results: data.results,
+        metadata: data.metadata,
+        summaries,
+        userPrompt: trimmed
+      });
+
+    } catch (err) {
+      console.error("Chat error:", err);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "Sorry, I encountered an error. Please try again!",
+        timestamp: new Date()
+      }]);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -230,6 +322,18 @@ export const AiChatPanel = ({
                 </div>
               </div>
             ))}
+            {isParsingIntent && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] rounded-2xl border-2 border-purple-300 bg-gradient-to-br from-purple-100 to-white px-4 py-3 shadow-lg">
+                  <div className="flex items-center gap-2 text-sm text-purple-700 font-semibold">
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-purple-600"></div>
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-purple-600" style={{ animationDelay: "0.1s" }}></div>
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-purple-600" style={{ animationDelay: "0.2s" }}></div>
+                    <span className="ml-2">🔍 Parsing your request...</span>
+                  </div>
+                </div>
+              </div>
+            )}
             {isLoading && (
               <div className="flex justify-start">
                 <div className="max-w-[80%] rounded-2xl border-2 border-white/20 bg-white/95 px-4 py-3 shadow-lg backdrop-blur">

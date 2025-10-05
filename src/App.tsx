@@ -144,7 +144,18 @@ function App() {
                 lat={lat} 
                 lon={lon} 
                 locationName={locationName} 
-                dateOfYear={dateOfYear} 
+                dateOfYear={dateOfYear}
+                onLocationChange={(newLat, newLon, newName) => {
+                  setLat(newLat);
+                  setLon(newLon);
+                  setLocationName(newName);
+                }}
+                onDateChange={(newDate) => {
+                  setDateOfYear(newDate);
+                }}
+                onConditionsChange={(newConditions) => {
+                  setConditions(newConditions);
+                }}
               />
             </div>
 
