@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- NASA Blue Background -->
+  <rect width="100" height="100" fill="#0B3D91" rx="20"/>
+  
+  <!-- Weather Icon - Cloud with Sun -->
+  <circle cx="35" cy="40" r="12" fill="#FC3D21" opacity="0.9"/>
+  <path d="M 25 50 Q 20 45 20 40 Q 20 35 25 32 Q 28 28 33 28 Q 36 28 39 30 Q 43 27 48 27 Q 54 27 58 32 Q 62 36 62 42 Q 62 46 59 50 Z" fill="#FFFFFF"/>
+  
+  <!-- Data Wave Pattern -->
+  <path d="M 15 65 Q 25 60 35 65 T 55 65 T 75 65 T 85 65" stroke="#FC3D21" stroke-width="3" fill="none" opacity="0.8"/>
+  <path d="M 15 75 Q 25 70 35 75 T 55 75 T 75 75 T 85 75" stroke="#FFFFFF" stroke-width="2.5" fill="none" opacity="0.7"/>
+  
+  <!-- Map Pin Marker -->
+  <path d="M 75 45 Q 75 38 70 33 Q 65 28 58 28 Q 51 28 46 33 Q 41 38 41 45 Q 41 50 45 55 L 58 70 L 71 55 Q 75 50 75 45 Z" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="58" cy="45" r="4" fill="#0B3D91"/>
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <!-- NASA Blue Background with Gradient -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0B3D91;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#062159;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <!-- Grid Pattern Background -->
+  <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+    <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  
+  <!-- Title -->
+  <text x="600" y="180" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#FFFFFF" text-anchor="middle">
+    WeatherWise Planner
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="250" font-family="Arial, sans-serif" font-size="36" fill="#FC3D21" text-anchor="middle">
+    Plan Smarter with NASA Satellite Data
+  </text>
+  
+  <!-- Features -->
+  <text x="600" y="330" font-family="Arial, sans-serif" font-size="28" fill="#FFFFFF" text-anchor="middle" opacity="0.9">
+    🛰️ 40+ Years of NASA MERRA-2 Climate Data
+  </text>
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="28" fill="#FFFFFF" text-anchor="middle" opacity="0.9">
+    🤖 AI-Powered Weather Insights
+  </text>
+  <text x="600" y="430" font-family="Arial, sans-serif" font-size="28" fill="#FFFFFF" text-anchor="middle" opacity="0.9">
+    📍 Historical Risk Analysis for Any Location
+  </text>
+  
+  <!-- NASA Logo Text -->
+  <text x="600" y="530" font-family="Arial, sans-serif" font-size="20" fill="#FFFFFF" text-anchor="middle" opacity="0.6">
+    Powered by NASA Earth Observations
+  </text>
+  
+  <!-- Weather Icon -->
+  <circle cx="200" cy="180" r="60" fill="#FC3D21" opacity="0.3"/>
+  <path d="M 150 200 Q 130 180 130 160 Q 130 140 150 125 Q 165 110 185 110 Q 200 110 210 120 Q 230 105 255 105 Q 285 105 305 125 Q 320 140 320 165 Q 320 185 305 200 Z" fill="#FFFFFF" opacity="0.9"/>
+  
+  <!-- Map Pin Icon -->
+  <path d="M 1050 200 Q 1050 170 1020 140 Q 990 110 950 110 Q 910 110 880 140 Q 850 170 850 200 Q 850 220 870 245 L 950 340 L 1030 245 Q 1050 220 1050 200 Z" fill="#FC3D21" opacity="0.9"/>
+  <circle cx="950" cy="200" r="25" fill="#FFFFFF"/>
+</svg>

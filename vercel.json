@@ -1,0 +1,13 @@
+{
+  "buildCommand": "yarn build",
+  "outputDirectory": "dist",
+  "devCommand": "yarn dev",
+  "installCommand": "yarn install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://weatherwiseplanner.onrender.com/api/:path*"
+    }
+  ]
+}
