@@ -56,18 +56,13 @@ export const MapSelector = ({ lat, lon, onChange }: MapSelectorProps) => {
   const center: LatLngExpression = lat != null && lon != null ? [lat, lon] : DEFAULT_CENTER;
 
   return (
-    <section className="space-y-4 rounded-2xl border border-white/60 bg-white/80 p-6 shadow-lg ring-1 ring-slate-200/60 backdrop-blur">
-      <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-800">Choose a location</h2>
-          <p className="text-sm text-slate-500">Tap anywhere on the map to drop a pin.</p>
-        </div>
-        <span className="inline-flex items-center gap-2 rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand-dark ring-1 ring-brand/20">
-          <span aria-hidden>🗺️</span>
-          Interactive NASA basemap
-        </span>
+    <section className="space-y-4">
+      <header className="flex flex-col gap-2">
+        <p className="text-sm text-slate-600">
+          🗺️ Click anywhere on the map or drag the marker to select your location
+        </p>
       </header>
-      <div className="h-64 overflow-hidden rounded-2xl border border-white/70 shadow-md ring-1 ring-slate-200/60">
+      <div className="h-96 overflow-hidden rounded-2xl border-2 border-slate-200 shadow-lg ring-2 ring-slate-100">
         <MapContainer center={center} zoom={6} scrollWheelZoom className="h-full w-full">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

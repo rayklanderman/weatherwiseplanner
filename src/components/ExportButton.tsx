@@ -13,9 +13,9 @@ export const ExportButton = ({ data }: ExportButtonProps) => {
 
   return (
     <Menu as="div" className="relative inline-block text-left">
-      <Menu.Button className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-4 text-lg font-bold text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400">
-        <ArrowDownTrayIcon className="h-6 w-6" />
-        <span>📥 Download Data</span>
+      <Menu.Button className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-nasa-red to-orange-600 px-6 py-3 text-base font-bold text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-nasa-red/50">
+        <ArrowDownTrayIcon className="h-5 w-5" />
+        <span>Export Data</span>
       </Menu.Button>
       <Transition
         as={Fragment}

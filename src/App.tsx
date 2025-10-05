@@ -13,9 +13,11 @@ import { WeatherConditionKey } from "./types/weather";
 const defaultDate = config.ui.defaultDate;
 const defaultConditions = config.ui.defaultConditions as WeatherConditionKey[];
 
+// FIXED: Date formatting now supports any year
 const formatDateForInput = (dateOfYear: string): string => {
   const [month, day] = dateOfYear.split("-");
-  return `2024-${month}-${day}`;
+  const currentYear = new Date().getFullYear();
+  return `${currentYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 };
 
 const parseDateOfYear = (value: string): string => {
@@ -31,7 +33,6 @@ function App() {
   const [dateOfYear, setDateOfYear] = useState(defaultDate);
   const [conditions, setConditions] = useState<WeatherConditionKey[]>(defaultConditions);
   const [activeCondition, setActiveCondition] = useState<WeatherConditionKey | null>(null);
-  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     if (geo.lat != null && geo.lon != null) {
@@ -66,78 +67,135 @@ function App() {
     }
   }, [activeCondition, data]);
 
-  const conditionChips = useMemo(() => [...conditions].sort(), [conditions]);
-
   return (
-    <div className="relative min-h-screen bg-slate-100">
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex justify-center" aria-hidden>
-        <div className="h-[420px] w-[120%] max-w-5xl -translate-y-1/3 rounded-full bg-[radial-gradient(circle_at_top,rgba(79,195,214,0.45),rgba(11,114,133,0)_65%)] opacity-60 blur-3xl animate-pulse-slow" />
-      </div>
-      <div className="relative mx-auto flex max-w-7xl flex-col gap-10 px-4 py-12 sm:px-6 lg:px-8">
-  <header className="relative flex flex-col gap-6 overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-6 shadow-xl ring-1 ring-slate-200/60 backdrop-blur">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-gradient-to-br from-brand/20 via-sky-100/40 to-transparent blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-32 -left-12 h-64 w-64 rounded-full bg-gradient-to-br from-emerald-100/50 via-sky-50 to-transparent blur-3xl" />
-          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">WeatherWise Planner</h1>
-              <p className="text-sm text-slate-600">
-                Plan outdoor adventures months ahead using NASA’s historical climate intelligence.
+    <div className="relative min-h-screen bg-gradient-to-br from-nasa-blue via-slate-900 to-black">
+      {/* NASA Space Background Effect */}
+      <div className="pointer-events-none absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30" />
+      
+      <div className="relative mx-auto max-w-[1920px] px-4 py-8 sm:px-6 lg:px-12">
+        {/* Premium NASA Header */}
+        <header className="mb-12 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-nasa-blue/90 via-nasa-blue/80 to-transparent p-8 shadow-2xl backdrop-blur-xl">
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+            <div className="flex-1">
+              <div className="mb-3 flex items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-nasa-red to-orange-600 shadow-lg">
+                  <span className="text-3xl">🛰️</span>
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-white drop-shadow-lg">WeatherWise Planner</h1>
+                  <p className="text-lg text-blue-200">Powered by NASA MERRA-2 Satellite Data</p>
+                </div>
+              </div>
+              <p className="max-w-2xl text-white/90">
+                Make data-driven decisions using 40+ years of validated climate intelligence. Perfect for farmers, event planners, and outdoor enthusiasts.
               </p>
             </div>
             <ExportButton data={data} />
           </div>
-          <div className="relative flex flex-wrap gap-2 text-xs text-slate-600">
-            <span className="rounded-full bg-slate-900/5 px-3 py-1 font-medium text-slate-700 ring-1 ring-slate-200/60">
-              Date: {dateOfYear}
-            </span>
-            {conditionChips.map((condition) => (
-              <span
-                key={condition}
-                className="rounded-full bg-brand/10 px-3 py-1 font-medium text-brand-dark ring-1 ring-brand/20"
-              >
-                {condition.replace(/_/g, " ")}
-              </span>
-            ))}
+          
+          {/* Quick Stats Bar */}
+          <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="rounded-xl bg-white/10 p-4 backdrop-blur">
+              <p className="text-sm text-blue-200">Location</p>
+              <p className="text-lg font-bold text-white">
+                {locationName || `${lat?.toFixed(2)}°, ${lon?.toFixed(2)}°`}
+              </p>
+            </div>
+            <div className="rounded-xl bg-white/10 p-4 backdrop-blur">
+              <p className="text-sm text-blue-200">Date</p>
+              <p className="text-lg font-bold text-white">{dateOfYear}</p>
+            </div>
+            <div className="rounded-xl bg-white/10 p-4 backdrop-blur">
+              <p className="text-sm text-blue-200">Data Source</p>
+              <p className="text-lg font-bold text-white">NASA MERRA-2</p>
+            </div>
+            <div className="rounded-xl bg-white/10 p-4 backdrop-blur">
+              <p className="text-sm text-blue-200">Monitoring</p>
+              <p className="text-lg font-bold text-white">{conditions.length} Risks</p>
+            </div>
           </div>
-          <p className="text-xs text-slate-500">
-            🛰️ Data provided by NASA Earth Observing System Data and Information System (EOSDIS) via GES DISC.
-          </p>
         </header>
 
-        <main className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
+          {/* Left Column - Inputs & Map */}
           <div className="space-y-8">
-            <MapSelector lat={lat} lon={lon} onChange={handleMapChange} />
+            {/* AI Assistant - PROMINENT PLACEMENT AT TOP */}
+            <div className="rounded-3xl border border-nasa-red/30 bg-gradient-to-br from-nasa-red/10 to-orange-500/10 p-1 shadow-2xl">
+              <AiChatPanel 
+                data={data} 
+                summaries={summaries} 
+                isQueryLoading={isLoading} 
+                lat={lat} 
+                lon={lon} 
+                locationName={locationName} 
+                dateOfYear={dateOfYear} 
+              />
+            </div>
 
-            <section className="rounded-2xl border border-white/60 bg-white/80 p-6 shadow-lg ring-1 ring-slate-200/60 backdrop-blur">
-              <div className="grid gap-6 md:grid-cols-2">
+            {/* Step 1: Map */}
+            <div className="rounded-3xl border border-white/20 bg-white/95 p-6 shadow-2xl backdrop-blur-sm">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-nasa-blue to-blue-600 text-lg font-bold text-white shadow-lg">1</span>
+                <h2 className="text-2xl font-bold text-nasa-blue">Choose Location</h2>
+              </div>
+              <MapSelector lat={lat} lon={lon} onChange={handleMapChange} />
+            </div>
+
+            {/* Step 2: Date & Conditions */}
+            <div className="rounded-3xl border border-white/20 bg-white/95 p-6 shadow-2xl backdrop-blur-sm">
+              <div className="mb-6 flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-nasa-blue to-blue-600 text-lg font-bold text-white shadow-lg">2</span>
+                <h2 className="text-2xl font-bold text-nasa-blue">Select Date & Weather Risks</h2>
+              </div>
+              
+              <div className="grid gap-6 lg:grid-cols-2">
+                {/* Date Picker */}
                 <div className="space-y-3">
-                  <h2 className="text-lg font-semibold text-slate-800">Choose a date</h2>
-                  <p className="text-sm text-slate-500">
-                    Select the day of year you want to explore. We’ll crunch ±3 days around it for robust stats.
-                  </p>
+                  <label className="block text-sm font-semibold text-slate-700">
+                    📅 Target Date
+                  </label>
                   <input
                     type="date"
-                    className="w-full rounded-xl border border-slate-200/70 bg-white px-4 py-2 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-light"
+                    className="w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-base font-medium text-slate-900 shadow-sm transition focus:border-nasa-blue focus:outline-none focus:ring-2 focus:ring-nasa-blue/20"
                     value={formatDateForInput(dateOfYear)}
                     onChange={(event) => setDateOfYear(parseDateOfYear(event.target.value))}
                   />
+                  <p className="text-xs text-slate-500">
+                    💡 We analyze ±3 days around this date for robust statistics
+                  </p>
                 </div>
 
+                {/* Conditions */}
                 <ConditionToggles selected={conditions} onChange={setConditions} />
               </div>
-            </section>
+            </div>
 
-            <ChartDisplay data={data} activeCondition={activeCondition} onActiveConditionChange={setActiveCondition} />
+            {/* Charts */}
+            <div className="rounded-3xl border border-white/20 bg-white/95 p-6 shadow-2xl backdrop-blur-sm">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-nasa-blue to-blue-600 text-lg font-bold text-white shadow-lg">3</span>
+                <h2 className="text-2xl font-bold text-nasa-blue">Historical Trends</h2>
+              </div>
+              <ChartDisplay data={data} activeCondition={activeCondition} onActiveConditionChange={setActiveCondition} />
+            </div>
           </div>
 
-          <ResultsPanel isLoading={isLoading} error={error} data={data} summaries={summaries} />
-        </main>
+          {/* Right Column - Results */}
+          <div className="space-y-8">
+            <div className="sticky top-8">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-nasa-red to-orange-600 text-lg font-bold text-white shadow-lg">4</span>
+                <h2 className="text-2xl font-bold text-white drop-shadow-lg">Risk Analysis</h2>
+              </div>
+              <ResultsPanel isLoading={isLoading} error={error} data={data} summaries={summaries} />
+            </div>
+          </div>
+        </div>
 
-        {/* AI Insights Panel - Prominent Section */}
-        <AiChatPanel data={data} summaries={summaries} isQueryLoading={isLoading} lat={lat} lon={lon} locationName={locationName} dateOfYear={dateOfYear} />
-
-        <footer className="pb-8 text-center text-xs text-slate-500">
-          🛰️ Built with NASA MERRA-2 satellite data. Perfect for farmers planning crops months ahead.
+        <footer className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur">
+          <p className="text-sm text-white/80">
+            🛰️ Data: NASA MERRA-2 (1980-2023) • AI: Groq Llama 3.3 70B • Built for NASA Space Apps 2025
+          </p>
         </footer>
       </div>
     </div>
