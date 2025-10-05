@@ -1,7 +1,5 @@
-import config from "../../config.json";
+import { API_BASE_URL } from "../config/api";
 import { WeatherQueryResponse, WeatherSummary } from "../types/weather";
-
-const API_BASE = config.api.baseUrl ?? "/api";
 
 export interface PlannerInsightPayload {
   query: WeatherQueryResponse["query"];
@@ -18,7 +16,7 @@ export interface PlannerInsightResponse {
 export const generatePlannerInsight = async (
   payload: PlannerInsightPayload
 ): Promise<PlannerInsightResponse> => {
-  const response = await fetch(`${API_BASE}/insights`, {
+  const response = await fetch(`${API_BASE_URL}/api/insights`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)

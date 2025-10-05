@@ -1,7 +1,5 @@
-import config from "../../config.json";
+import { API_BASE_URL } from "../config/api";
 import { WeatherConditionKey, WeatherQueryInput, WeatherQueryResponse } from "../types/weather";
-
-const API_BASE = config.api.baseUrl ?? "/api";
 
 const buildQueryPayload = (
   lat: number,
@@ -23,7 +21,7 @@ export const queryWeatherRisk = async (
   locationName?: string
 ): Promise<WeatherQueryResponse> => {
   const payload = buildQueryPayload(lat, lon, dateOfYear, conditions, locationName);
-  const response = await fetch(`${API_BASE}/query`, {
+  const response = await fetch(`${API_BASE_URL}/api/query`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)

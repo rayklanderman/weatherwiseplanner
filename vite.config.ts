@@ -8,14 +8,20 @@ export default defineConfig({
     open: true,
     proxy: {
       "/api": {
-        target: "http://localhost:8000",
+        target: process.env.VITE_API_URL || "http://localhost:8000",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, "")
+        rewrite: (path) => path.replace(/^\/api/, ""),
+        secure: false,
+        ws: true
       }
     }
   },
   build: {
     outDir: "dist",
     sourcemap: true
+  },
+  define: {
+    // Make env vars available in the app
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || '')
   }
 });

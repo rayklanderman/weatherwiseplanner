@@ -75,9 +75,15 @@ class InsightRequest(BaseModel):
 
 app = FastAPI(title="WeatherWise Planner API")
 
+# Configure CORS for both development and production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",  # Local development
+        "http://127.0.0.1:5173",  # Local development alternative
+        "https://weatherwiseplanner.vercel.app",  # Production frontend
+        "https://*.vercel.app",  # Vercel preview deployments
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -86,7 +92,19 @@ app.add_middleware(
 
 @app.get("/")
 async def root() -> dict[str, str]:
-    return {"message": "WeatherWise Planner backend is running."}
+    """Health check endpoint"""
+    return {
+        "message": "WeatherWise Planner backend is running.",
+        "status": "healthy",
+        "version": "1.0.0"
+    }
+
+
+@app.get("/health")
+async def health_check() -> dict[str, str]:
+    """Dedicated health check for monitoring services"""
+    return {"status": "ok"}
+
 
 
 @app.post("/query")
