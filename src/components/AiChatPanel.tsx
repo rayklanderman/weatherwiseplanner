@@ -186,14 +186,14 @@ export const AiChatPanel = ({
       <div className="flex-1 space-y-4 overflow-y-auto p-6" style={{ maxHeight: "500px" }}>
         {messages.length === 0 && !data ? (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-            <div className="rounded-full bg-blue-100 p-6">
+            <div className="rounded-full bg-white/10 p-6 backdrop-blur">
               <span className="text-6xl">🗺️</span>
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-700">
+              <p className="text-lg font-semibold text-white drop-shadow-lg">
                 Select a location on the map to start
               </p>
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-blue-100">
                 I'll analyze NASA satellite data and answer your questions about weather patterns, risks, and planning.
               </p>
             </div>
@@ -206,19 +206,19 @@ export const AiChatPanel = ({
                 className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                  className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-lg ${
                     msg.role === "user"
-                      ? "bg-nasa-red text-white"
+                      ? "bg-gradient-to-br from-nasa-red to-orange-600 text-white"
                       : msg.role === "assistant"
-                      ? "border-2 border-gray-200 bg-white text-gray-800"
-                      : "border-2 border-blue-200 bg-blue-50 text-blue-900"
+                      ? "border-2 border-white/20 bg-white/95 text-slate-800 backdrop-blur"
+                      : "border-2 border-blue-300 bg-gradient-to-br from-blue-100 to-white text-blue-900"
                   }`}
                 >
                   {msg.role === "assistant" && (
-                    <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-gray-500">
+                    <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-nasa-blue">
                       <span className="text-base">🤖</span> AI Assistant
                     </div>
-                  )}
+                  )}  
                   <div className="whitespace-pre-wrap text-sm leading-relaxed">
                     {msg.content.split("**").map((part, i) =>
                       i % 2 === 1 ? <strong key={i}>{part}</strong> : part
@@ -232,8 +232,8 @@ export const AiChatPanel = ({
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="max-w-[80%] rounded-2xl border-2 border-gray-200 bg-white px-4 py-3">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="max-w-[80%] rounded-2xl border-2 border-white/20 bg-white/95 px-4 py-3 shadow-lg backdrop-blur">
+                  <div className="flex items-center gap-2 text-sm text-nasa-blue font-semibold">
                     <div className="h-2 w-2 animate-bounce rounded-full bg-nasa-blue"></div>
                     <div className="h-2 w-2 animate-bounce rounded-full bg-nasa-blue" style={{ animationDelay: "0.1s" }}></div>
                     <div className="h-2 w-2 animate-bounce rounded-full bg-nasa-blue" style={{ animationDelay: "0.2s" }}></div>
@@ -249,8 +249,8 @@ export const AiChatPanel = ({
 
       {/* Suggested Questions */}
       {data && messages.length <= 1 && (
-        <div className="border-t border-gray-200 bg-gray-50 px-6 py-3">
-          <p className="mb-2 text-xs font-semibold text-gray-600">💡 Suggested questions:</p>
+        <div className="border-t border-white/20 bg-white/5 px-6 py-3 backdrop-blur">
+          <p className="mb-2 text-xs font-semibold text-white/90">💡 Suggested questions:</p>
           <div className="flex flex-wrap gap-2">
             {suggestedQuestions.map((q, idx) => (
               <button
@@ -266,9 +266,9 @@ export const AiChatPanel = ({
       )}
 
       {/* Input */}
-      <div className="border-t-2 border-gray-200 bg-gray-50 p-4">
+      <div className="border-t-2 border-white/20 bg-white/5 p-4 backdrop-blur">
         {error && (
-          <div className="mb-3 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+          <div className="mb-3 rounded-lg bg-red-500/10 border border-red-300 px-3 py-2 text-sm text-red-200">
             ⚠️ {error}
           </div>
         )}
@@ -280,18 +280,18 @@ export const AiChatPanel = ({
             onKeyPress={handleKeyPress}
             placeholder={data ? "Ask anything about the weather data..." : "Select a location first..."}
             disabled={!data || isLoading}
-            className="flex-1 rounded-xl border-2 border-gray-300 px-4 py-3 text-sm focus:border-nasa-blue focus:outline-none focus:ring-2 focus:ring-nasa-blue/20 disabled:bg-gray-100"
+            className="flex-1 rounded-xl border-2 border-white/20 bg-white/90 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-nasa-blue focus:outline-none focus:ring-2 focus:ring-nasa-blue/20 disabled:bg-white/50"
           />
           <button
             onClick={handleSend}
             disabled={!data || !input.trim() || isLoading}
-            className="rounded-xl bg-nasa-red px-6 py-3 font-bold text-white transition hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="rounded-xl bg-gradient-to-r from-nasa-red to-orange-600 px-6 py-3 font-bold text-white shadow-lg transition hover:scale-105 hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {isLoading ? "..." : "Send"}
           </button>
         </div>
-        <p className="mt-2 text-xs text-gray-500">
-          Press <kbd className="rounded bg-gray-200 px-1">Enter</kbd> to send • Powered by Groq AI (sub-second responses)
+        <p className="mt-2 text-xs text-white/70">
+          Press <kbd className="rounded bg-white/20 px-1 text-white">Enter</kbd> to send • Powered by Groq AI (sub-second responses)
         </p>
       </div>
     </div>

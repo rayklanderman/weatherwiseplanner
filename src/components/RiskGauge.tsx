@@ -41,8 +41,8 @@ export const RiskGauge = ({ value, strokeClass, label }: RiskGaugeProps) => {
         />
       </svg>
       <figcaption className="pointer-events-none absolute text-center">
-        <span className="block text-lg font-semibold text-slate-800">{clamped}%</span>
-        <span className="block text-[11px] font-medium uppercase tracking-wide text-slate-500">historical odds</span>
+        <span className="block text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{clamped}%</span>
+        <span className="block text-[10px] font-semibold uppercase tracking-wider text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">historical<br/>odds</span>
       </figcaption>
     </figure>
   );

@@ -167,7 +167,7 @@ function App() {
               <div className="grid gap-6 lg:grid-cols-2">
                 {/* Date Picker */}
                 <div className="space-y-3">
-                  <label className="block text-sm font-semibold text-slate-700">
+                  <label className="block text-sm font-semibold text-nasa-blue">
                     📅 Target Date
                   </label>
                   <input
@@ -176,7 +176,7 @@ function App() {
                     value={formatDateForInput(dateOfYear)}
                     onChange={(event) => setDateOfYear(parseDateOfYear(event.target.value))}
                   />
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-600">
                     💡 We analyze ±3 days around this date for robust statistics
                   </p>
                 </div>
