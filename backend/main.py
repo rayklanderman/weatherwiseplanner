@@ -81,7 +81,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",  # Local development
         "http://127.0.0.1:5173",  # Local development alternative
-        "https://weatherwiseplanner.vercel.app",  # Production frontend
+        "https://weatherwiseplanner.vercel.app",  # Production frontend (Vercel)
+        "https://weatherwise.earth",  # Custom domain
+        "https://www.weatherwise.earth",  # Custom domain with www
         "https://*.vercel.app",  # Vercel preview deployments
     ],
     allow_credentials=True,
