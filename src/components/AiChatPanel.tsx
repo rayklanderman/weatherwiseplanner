@@ -106,6 +106,33 @@ export const AiChatPanel = ({
     }
   };
 
+  const handleClearChat = () => {
+    if (confirm("Clear all chat messages?")) {
+      setMessages([]);
+      reset();
+    }
+  };
+
+  const handleShareChat = () => {
+    const chatText = messages
+      .map(m => `[${m.role.toUpperCase()}]: ${m.content}`)
+      .join('\n\n');
+    
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(chatText);
+      alert("✅ Chat copied to clipboard!");
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = chatText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert("✅ Chat copied to clipboard!");
+    }
+  };
+
   const suggestedQuestions = [
     "What are the main weather risks for this location?",
     "Is this suitable for outdoor events?",
@@ -130,8 +157,28 @@ export const AiChatPanel = ({
             <p className="text-xs text-blue-200">Powered by Groq AI + NASA Data</p>
           </div>
         </div>
-        <div className="rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white">
-          ⚡ Online
+        <div className="flex items-center gap-2">
+          {messages.length > 0 && (
+            <>
+              <button
+                onClick={handleShareChat}
+                className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-white/30"
+                title="Copy chat to clipboard"
+              >
+                📋 Share
+              </button>
+              <button
+                onClick={handleClearChat}
+                className="rounded-lg bg-nasa-red/80 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-nasa-red"
+                title="Clear all messages"
+              >
+                🗑️ Clear
+              </button>
+            </>
+          )}
+          <div className="rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white">
+            ⚡ Online
+          </div>
         </div>
       </div>
 

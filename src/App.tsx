@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MapSelector } from "./components/MapSelector";
 import { ConditionToggles } from "./components/ConditionToggles";
 import { ResultsPanel } from "./components/ResultsPanel";
@@ -13,16 +13,23 @@ import { WeatherConditionKey } from "./types/weather";
 const defaultDate = config.ui.defaultDate;
 const defaultConditions = config.ui.defaultConditions as WeatherConditionKey[];
 
-// FIXED: Date formatting now supports any year
+// Date utilities - stores and retrieves year+month+day
 const formatDateForInput = (dateOfYear: string): string => {
-  const [month, day] = dateOfYear.split("-");
+  // dateOfYear format: "MM-DD" or "YYYY-MM-DD"
+  const parts = dateOfYear.split("-");
+  if (parts.length === 3) {
+    // Already has year
+    return dateOfYear;
+  }
+  // Default to current year if no year specified
   const currentYear = new Date().getFullYear();
+  const [month, day] = parts;
   return `${currentYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 };
 
 const parseDateOfYear = (value: string): string => {
-  const [, month, day] = value.split("-");
-  return `${month}-${day}`;
+  // Always store full date including year
+  return value;
 };
 
 function App() {
@@ -30,7 +37,10 @@ function App() {
   const [lat, setLat] = useState<number | null>(39.7392);
   const [lon, setLon] = useState<number | null>(-104.9903);
   const [locationName, setLocationName] = useState<string | undefined>();
-  const [dateOfYear, setDateOfYear] = useState(defaultDate);
+  const [dateOfYear, setDateOfYear] = useState(() => {
+    // Convert MM-DD to YYYY-MM-DD on first load
+    return formatDateForInput(defaultDate);
+  });
   const [conditions, setConditions] = useState<WeatherConditionKey[]>(defaultConditions);
   const [activeCondition, setActiveCondition] = useState<WeatherConditionKey | null>(null);
 
@@ -103,7 +113,13 @@ function App() {
             </div>
             <div className="rounded-xl bg-white/10 p-4 backdrop-blur">
               <p className="text-sm text-blue-200">Date</p>
-              <p className="text-lg font-bold text-white">{dateOfYear}</p>
+              <p className="text-lg font-bold text-white">
+                {new Date(dateOfYear).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'short', 
+                  day: 'numeric' 
+                })}
+              </p>
             </div>
             <div className="rounded-xl bg-white/10 p-4 backdrop-blur">
               <p className="text-sm text-blue-200">Data Source</p>

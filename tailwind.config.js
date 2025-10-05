@@ -4,6 +4,14 @@ import forms from "@tailwindcss/forms";
 /** @type {import('tailwindcss').Config} */
 const config = {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  safelist: [
+    // NASA Colors
+    'bg-nasa-blue', 'bg-nasa-red', 'text-nasa-blue', 'text-nasa-red', 'text-nasa-white',
+    'from-nasa-blue', 'from-nasa-red', 'to-nasa-blue', 'to-nasa-red',
+    'border-nasa-blue', 'border-nasa-red', 'via-nasa-blue',
+    // Common utilities that might be dynamic
+    'backdrop-blur-xl', 'shadow-2xl', 'rounded-3xl'
+  ],
   theme: {
     extend: {
       fontFamily: {
