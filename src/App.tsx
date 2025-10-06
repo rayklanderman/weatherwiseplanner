@@ -107,8 +107,10 @@ function App() {
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         
-        {/* HERO: AI Assistant - MOST PROMINENT */}
-        <div className="mb-6">
+        {/* HERO SECTION: AI Chat + Map Selector (Side by Side) */}
+        <div className="mb-6 grid gap-4 lg:grid-cols-2">
+          
+          {/* AI Assistant - LEFT SIDE */}
           <div className="overflow-hidden rounded-2xl border border-nasa-red/40 bg-gradient-to-br from-nasa-red/20 via-orange-600/20 to-pink-600/20 p-0.5 shadow-2xl backdrop-blur-xl">
             <div className="rounded-[15px] bg-slate-900/80 p-4 sm:p-6">
               <AiChatPanel 
@@ -136,20 +138,30 @@ function App() {
               />
             </div>
           </div>
-        </div>
 
-        {/* 3-Column Grid: Map | Satellite | Controls */}
-        <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          
-          {/* Map Selector */}
+          {/* Location Selector - RIGHT SIDE */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
             <div className="mb-3 flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 text-lg">📍</div>
-              <h2 className="text-lg font-bold text-white">Location</h2>
+              <div>
+                <h2 className="text-lg font-bold text-white">Select Location</h2>
+                <p className="text-xs text-blue-200">Click map or drag marker</p>
+              </div>
             </div>
             <MapSelector lat={lat} lon={lon} onChange={handleMapChange} />
+            {locationName && (
+              <div className="mt-3 rounded-lg bg-white/10 px-3 py-2">
+                <p className="text-xs font-semibold text-nasa-red">Current Location</p>
+                <p className="text-sm text-white">{locationName}</p>
+                <p className="text-xs text-blue-200">{lat?.toFixed(4)}°, {lon?.toFixed(4)}°</p>
+              </div>
+            )}
           </div>
+        </div>
 
+        {/* 2-Column Grid: Satellite | Controls */}
+        <div className="mb-6 grid gap-4 md:grid-cols-2">
+          
           {/* Satellite Viewer */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
             <div className="mb-3 flex items-center gap-2">
@@ -160,7 +172,7 @@ function App() {
           </div>
 
           {/* Date & Conditions */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl md:col-span-2 lg:col-span-1">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
             <div className="mb-3 flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-pink-500/20 text-lg">⚙️</div>
               <h2 className="text-lg font-bold text-white">Settings</h2>

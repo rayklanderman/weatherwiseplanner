@@ -247,27 +247,28 @@ export const AiChatPanel = ({
   return (
     <div className="flex h-full flex-col rounded-2xl border-2 border-nasa-blue bg-white shadow-2xl">
       {/* Header */}
-      <div className="flex items-center justify-between border-b-2 border-nasa-blue bg-gradient-to-r from-nasa-blue to-blue-800 px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
-            <span className="text-2xl">🤖</span>
+      <div className="border-b-2 border-nasa-blue bg-gradient-to-r from-nasa-blue to-blue-800 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+              <span className="text-2xl">🤖</span>
+            </div>
+            <div>
+              <h3 className="font-bold text-white">AI Weather Assistant</h3>
+              <p className="text-xs text-blue-200">Powered by Groq AI + NASA Data</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-bold text-white">AI Weather Assistant</h3>
-            <p className="text-xs text-blue-200">Powered by Groq AI + NASA Data</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {messages.length > 0 && (
-            <>
-              <button
-                onClick={handleShareChat}
-                className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-white/30"
-                title="Copy chat to clipboard"
-              >
-                📋 Share
-              </button>
-              <button
+          <div className="flex items-center gap-2">
+            {messages.length > 0 && (
+              <>
+                <button
+                  onClick={handleShareChat}
+                  className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-white/30"
+                  title="Copy chat to clipboard"
+                >
+                  📋 Share
+                </button>
+                <button
                 onClick={handleClearChat}
                 className="rounded-lg bg-nasa-red/80 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-nasa-red"
                 title="Clear all messages"
@@ -279,7 +280,28 @@ export const AiChatPanel = ({
           <div className="rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white">
             ⚡ Online
           </div>
+          </div>
         </div>
+        
+        {/* Current Location & Date Bar */}
+        {(lat !== null && lon !== null) && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg bg-white/10 px-4 py-2 backdrop-blur">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm">📍</span>
+              <span className="text-xs font-semibold text-white">
+                {locationName || `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`}
+              </span>
+            </div>
+            <div className="h-4 w-px bg-white/30" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm">📅</span>
+              <span className="text-xs text-blue-200">{dateOfYear}</span>
+            </div>
+            <div className="ml-auto text-xs text-blue-300">
+              ← Select location on map
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Messages */}
