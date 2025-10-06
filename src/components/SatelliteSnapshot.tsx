@@ -15,9 +15,9 @@ const toIsoDate = (dateOfYear: string): string => {
   const [month, day] = dateOfYear.split("-");
   const year = new Date().getFullYear();
   if (!month || !day) {
-    return `-07-01`;
+    return `${year}-07-01`;
   }
-  return `--`;
+  return `${year}-${month}-${day}`;
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -42,7 +42,7 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
       REQUEST: "GetMap",
       LAYERS: GIBS_LAYER,
       SRS: "EPSG:4326",
-      BBOX: `,,,`,
+      BBOX: `${minLon},${minLat},${maxLon},${maxLat}`,
       WIDTH: "640",
       HEIGHT: "640",
       FORMAT: "image/png",
@@ -50,7 +50,7 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
       TIME: toIsoDate(dateOfYear)
     });
 
-    return `?`;
+    return `${GIBS_WMS_ENDPOINT}?${query.toString()}`;
   }, [lat, lon, dateOfYear]);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
       try {
         const response = await fetch(requestUrl, { signal: controller.signal });
         if (!response.ok) {
-          throw new Error(`GIBS WMS request failed ()`);
+          throw new Error(`GIBS WMS request failed (${response.status})`);
         }
         const blob = await response.blob();
         const objectUrl = URL.createObjectURL(blob);
