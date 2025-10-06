@@ -43,6 +43,7 @@ export const AiChatPanel = ({
   const [input, setInput] = useState("");
   const [isParsingIntent, setIsParsingIntent] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastLocationRef = useRef<string>(""); // Track last location to prevent duplicate notifications
 
   // Auto-scroll to bottom
   const scrollToBottom = () => {
@@ -55,31 +56,31 @@ export const AiChatPanel = ({
 
   // Welcome/Update message when data loads or location changes
   useEffect(() => {
-    if (data) {
-      const location = locationName || `${lat?.toFixed(2)}°, ${lon?.toFixed(2)}°`;
-      const welcomeMsg = `🛰️ NASA Data Loaded for **${location}** on **${dateOfYear}**\n\nI'm your AI assistant powered by Groq. Ask me anything about the weather patterns, risks, or planning advice!`;
+    if (data && lat !== null && lon !== null) {
+      const location = locationName || `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
+      const locationKey = `${lat.toFixed(4)},${lon.toFixed(4)}`;
       
-      // If no messages, add welcome message
+      // If no messages yet, add welcome message
       if (messages.length === 0) {
+        const welcomeMsg = `🛰️ NASA Data Loaded for **${location}** on **${dateOfYear}**\n\nI'm your AI assistant powered by Groq. Ask me anything about the weather patterns, risks, or planning advice!`;
         setMessages([{
           role: "system",
           content: welcomeMsg,
           timestamp: new Date()
         }]);
+        lastLocationRef.current = locationKey;
       } 
-      // If location changed, add update notification
-      else {
-        const lastSystemMsg = messages.find(m => m.role === "system");
-        if (!lastSystemMsg || !lastSystemMsg.content.includes(location)) {
-          setMessages(prev => [...prev, {
-            role: "system",
-            content: `📍 **Location Updated:** Now analyzing data for **${location}** on **${dateOfYear}**`,
-            timestamp: new Date()
-          }]);
-        }
+      // If location changed from last recorded location, add ONE update notification
+      else if (lastLocationRef.current !== locationKey) {
+        setMessages(prev => [...prev, {
+          role: "system",
+          content: `📍 **Location Updated:** Now analyzing **${location}** on **${dateOfYear}**. Ready for your questions!`,
+          timestamp: new Date()
+        }]);
+        lastLocationRef.current = locationKey;
       }
     }
-  }, [data, lat, lon, locationName, dateOfYear, messages]);
+  }, [data, lat, lon, locationName, dateOfYear, messages.length]); // Use messages.length instead of messages
 
   // Handle AI response
   useEffect(() => {

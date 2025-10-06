@@ -131,3 +131,60 @@ export async function getCoordinates(
   console.warn(`❌ Could not find location: ${placeName}`);
   return null;
 }
+
+/**
+ * Reverse geocoding: Convert coordinates to city/location name
+ * Uses OpenStreetMap Nominatim API (free, no API key required)
+ * 
+ * @param lat - Latitude (-90 to 90)
+ * @param lon - Longitude (-180 to 180)
+ * @returns Location name (city, town, or region) or null if not found
+ */
+export async function reverseGeocode(lat: number, lon: number): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?` +
+        new URLSearchParams({
+          lat: lat.toString(),
+          lon: lon.toString(),
+          format: "json",
+          zoom: "10", // City level detail
+        }),
+      {
+        headers: {
+          "User-Agent": "WeatherWise-Planner/1.0", // Required by Nominatim
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.warn(`Reverse geocoding failed: ${response.statusText}`);
+      return null;
+    }
+
+    const result = await response.json();
+    
+    if (!result || result.error) {
+      console.warn(`No location found for coordinates: ${lat}, ${lon}`);
+      return null;
+    }
+
+    // Extract city name from address
+    const address = result.address || {};
+    const locationName = 
+      address.city || 
+      address.town || 
+      address.village || 
+      address.county || 
+      address.state || 
+      address.country ||
+      result.display_name?.split(",")[0] || // Fallback to first part of display name
+      null;
+
+    console.log(`📍 Reverse geocoded (${lat}, ${lon}) → ${locationName}`);
+    return locationName;
+  } catch (error) {
+    console.error("Reverse geocoding error:", error);
+    return null;
+  }
+}

@@ -8,6 +8,7 @@ import { SatelliteSnapshot } from "./components/SatelliteSnapshot";
 import { useWeatherQuery } from "./hooks/useWeatherQuery";
 import { useGeolocation } from "./hooks/useGeolocation";
 import { AiChatPanel } from "./components/AiChatPanel";
+import { reverseGeocode } from "./services/geocoder";
 import config from "../config.json";
 import { WeatherConditionKey } from "./types/weather";
 
@@ -54,10 +55,16 @@ function App() {
     }
   }, [geo.lat, geo.lon]);
 
-  const handleMapChange = useCallback((nextLat: number, nextLon: number) => {
+  const handleMapChange = useCallback(async (nextLat: number, nextLon: number) => {
     setLat(nextLat);
     setLon(nextLon);
-    setLocationName(undefined);
+    setLocationName(undefined); // Clear first while loading
+    
+    // Reverse geocode to get city name
+    const cityName = await reverseGeocode(nextLat, nextLon);
+    if (cityName) {
+      setLocationName(cityName);
+    }
   }, []);
 
   const { data, error, isLoading, summaries } = useWeatherQuery({
