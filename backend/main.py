@@ -84,8 +84,8 @@ app.add_middleware(
         "https://weatherwiseplanner.vercel.app",  # Production frontend (Vercel)
         "https://weatherwise.earth",  # Custom domain
         "https://www.weatherwise.earth",  # Custom domain with www
-        "https://*.vercel.app",  # Vercel preview deployments
     ],
+    allow_origin_regex=r"https://.*\.vercel\.app",  # Vercel preview deployments
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
