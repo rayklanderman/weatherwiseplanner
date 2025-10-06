@@ -105,12 +105,12 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
             return (
               <div
                 key={condition}
-                className="group relative overflow-hidden rounded-2xl border border-slate-100/60 bg-white/80 p-5 shadow-sm ring-1 ring-inset ring-slate-200/60 transition hover:-translate-y-0.5 hover:shadow-lg"
+                className="group relative overflow-hidden rounded-2xl border border-white/20 bg-white/5 p-5 shadow-sm backdrop-blur-sm transition hover:-translate-y-0.5 hover:shadow-lg"
               >
                 <div
                   aria-hidden
                   className={clsx(
-                    "pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity group-hover:opacity-80",
+                    "pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity group-hover:opacity-20",
                     meta.gradient
                   )}
                 />
@@ -126,7 +126,7 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
                     >
                       {meta.icon}
                     </span>
-                    <dt className="text-base font-semibold text-slate-800">{meta.label}</dt>
+                    <dt className="text-base font-semibold text-white drop-shadow">{meta.label}</dt>
                   </div>
                   <RiskGauge
                     value={result.probability_percent}
@@ -134,23 +134,23 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
                     label={meta.label}
                   />
                 </div>
-                <dd className="relative mt-3 space-y-3 text-sm text-slate-600">
+                <dd className="relative mt-3 space-y-3 text-sm text-blue-100">
                   <span
                     className={clsx(
-                      "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white",
+                      "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white drop-shadow",
                       palette.badge
                     )}
                   >
                     {result.probability_percent}% historical likelihood
                   </span>
                   {result.threshold && (
-                    <p>
+                    <p className="text-white drop-shadow">
                       Threshold: <strong>{result.threshold.value}</strong> {result.threshold.unit}
                     </p>
                   )}
-                  {result.trend && <p className="font-medium text-brand-dark">Trend: {result.trend}</p>}
+                  {result.trend && <p className="font-medium text-blue-200 drop-shadow">Trend: {result.trend}</p>}
                   {result.description && (
-                    <p className="text-xs text-slate-500">{result.description}</p>
+                    <p className="text-xs text-blue-200/80">{result.description}</p>
                   )}
                 </dd>
               </div>
@@ -160,16 +160,16 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
       </div>
 
       {summaries.length > 0 && (
-        <div className="rounded-2xl border border-brand/30 bg-brand/5 p-6 shadow-sm">
-          <h3 className="text-base font-semibold text-brand-dark">Plain-language summary</h3>
-          <ul className="mt-4 space-y-2 text-sm text-brand-dark/90">
+        <div className="rounded-2xl border border-nasa-blue/30 bg-nasa-blue/10 p-6 shadow-sm backdrop-blur-xl">
+          <h3 className="text-base font-semibold text-white drop-shadow-lg">Plain-language summary</h3>
+          <ul className="mt-4 space-y-2 text-sm text-blue-100">
             {summaries.map((summary) => (
               <li key={summary.label} className="flex items-start gap-2">
-                <span className="mt-1 inline-block h-2.5 w-2.5 rounded-full bg-brand" aria-hidden />
+                <span className="mt-1 inline-block h-2.5 w-2.5 rounded-full bg-nasa-blue" aria-hidden />
                 <div>
-                  <p className="font-medium">{summary.label}</p>
-                  <p className="text-sm">{summary.friendlyMessage}</p>
-                  {summary.trend && <p className="text-xs text-brand-dark/70">Trend: {summary.trend}</p>}
+                  <p className="font-medium text-white drop-shadow">{summary.label}</p>
+                  <p className="text-sm text-blue-100">{summary.friendlyMessage}</p>
+                  {summary.trend && <p className="text-xs text-blue-200/70">Trend: {summary.trend}</p>}
                 </div>
               </li>
             ))}

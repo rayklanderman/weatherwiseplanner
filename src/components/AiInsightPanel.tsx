@@ -72,19 +72,19 @@ export const AiInsightPanel = ({ data, summaries, isQueryLoading }: AiInsightPan
   };
 
   const disabled = !data || isQueryLoading || isLoading;
-  const buttonLabel = hasGenerated ? "🔄 Ask AI Again" : "🤖 Get AI Farming Advice NOW!";
+  const buttonLabel = hasGenerated ? "🔄 Ask AI Again" : "🤖 Get AI Insights NOW!";
 
   return (
-    <section className="rounded-2xl border-4 border-pink-400 bg-gradient-to-br from-pink-50 via-white to-rose-50 p-8 shadow-2xl">
+    <section className="rounded-2xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
       <div className="flex flex-col gap-6">
         {/* Header with BIG button */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3">
             <span className="text-5xl">🤖</span>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900">AI Farming Assistant</h2>
-              <p className="text-sm text-slate-700">
-                ⚡ Instant advice in under 1 second • Powered by Groq AI
+              <h2 className="text-2xl font-bold text-white drop-shadow-lg">AI Weather Assistant</h2>
+              <p className="text-sm text-blue-100 drop-shadow">
+                ⚡ Instant insights in under 1 second • Powered by Groq AI
               </p>
             </div>
           </div>
@@ -94,7 +94,7 @@ export const AiInsightPanel = ({ data, summaries, isQueryLoading }: AiInsightPan
             type="button"
             onClick={handleGenerate}
             disabled={disabled}
-            className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-600 px-8 py-6 text-2xl font-bold text-white shadow-xl transition hover:scale-105 hover:shadow-2xl disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-400 disabled:hover:scale-100"
+            className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-nasa-red to-orange-600 px-8 py-6 text-2xl font-bold text-white shadow-xl transition hover:scale-105 hover:shadow-2xl disabled:cursor-not-allowed disabled:from-slate-600 disabled:to-slate-700 disabled:hover:scale-100"
           >
             {isLoading ? (
               <>
@@ -111,60 +111,60 @@ export const AiInsightPanel = ({ data, summaries, isQueryLoading }: AiInsightPan
         </div>
 
         {/* Example questions */}
-        <div className="rounded-xl bg-blue-50 p-4">
-          <p className="mb-2 font-semibold text-blue-900">💡 Ask questions like:</p>
-          <ul className="space-y-1 text-sm text-blue-800">
-            <li>• "Is this good weather for potato farming?"</li>
-            <li>• "What crops should I plant on this date?"</li>
-            <li>• "Will there be enough rain for maize?"</li>
-            <li>• "Should I worry about frost damage?"</li>
+        <div className="rounded-xl bg-white/5 p-4 backdrop-blur">
+          <p className="mb-2 font-semibold text-white drop-shadow">💡 Ask questions like:</p>
+          <ul className="space-y-1 text-sm text-blue-100">
+            <li>• "What are the weather patterns for this date?"</li>
+            <li>• "Is this a good time for outdoor events?"</li>
+            <li>• "What risks should I prepare for?"</li>
+            <li>• "How does this compare to typical conditions?"</li>
           </ul>
         </div>
 
         {/* Optional custom prompt */}
         <details className="group">
-          <summary className="cursor-pointer text-sm font-semibold text-slate-700 hover:text-brand">
+          <summary className="cursor-pointer text-sm font-semibold text-white drop-shadow hover:text-blue-200">
             ➕ Add custom question (optional)
           </summary>
           <textarea
             value={userPrompt}
             onChange={(event) => setUserPrompt(event.target.value)}
-            placeholder="e.g., 'I want to plant potatoes. Is the weather suitable? What risks should I prepare for?'"
+            placeholder="e.g., 'I'm planning an outdoor event. What are the weather risks I should prepare for?'"
             rows={3}
-            className="mt-2 w-full rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:bg-slate-100"
+            className="mt-2 w-full rounded-xl border-2 border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/50 shadow-sm backdrop-blur focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 disabled:bg-white/5"
             disabled={!data}
           />
         </details>
 
         {error && (
-          <div className="rounded-lg bg-red-50 p-4">
-            <p className="font-semibold text-red-900">⚠️ Error:</p>
-            <p className="text-sm text-red-700">{error}</p>
+          <div className="rounded-lg bg-red-500/20 p-4 backdrop-blur">
+            <p className="font-semibold text-white drop-shadow">⚠️ Error:</p>
+            <p className="text-sm text-red-100">{error}</p>
           </div>
         )}
 
         {/* AI Response Box */}
-        <div className="min-h-[200px] rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-inner">
+        <div className="min-h-[200px] rounded-2xl border-2 border-white/20 bg-white/5 p-6 shadow-inner backdrop-blur">
           {isLoading ? (
             <div className="space-y-3">
-              <div className="h-4 w-5/6 animate-pulse rounded-full bg-slate-200" />
-              <div className="h-4 w-4/6 animate-pulse rounded-full bg-slate-200" />
-              <div className="h-4 w-3/4 animate-pulse rounded-full bg-slate-200" />
-              <div className="h-4 w-2/3 animate-pulse rounded-full bg-slate-200" />
+              <div className="h-4 w-5/6 animate-pulse rounded-full bg-white/20" />
+              <div className="h-4 w-4/6 animate-pulse rounded-full bg-white/20" />
+              <div className="h-4 w-3/4 animate-pulse rounded-full bg-white/20" />
+              <div className="h-4 w-2/3 animate-pulse rounded-full bg-white/20" />
             </div>
           ) : insight ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-slate-900">🌾 AI Recommendations:</h3>
+                <h3 className="text-lg font-bold text-white drop-shadow-lg">� AI Insights:</h3>
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="rounded-lg border-2 border-green-600 bg-green-50 px-4 py-2 text-sm font-semibold text-green-900 transition hover:bg-green-100"
+                  className="rounded-lg border-2 border-green-400 bg-green-500/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-500/30 backdrop-blur"
                 >
-                  {copied ? "✅ Copied!" : "📋 Copy Advice"}
+                  {copied ? "✅ Copied!" : "📋 Copy Insights"}
                 </button>
               </div>
-              <div className="space-y-3 text-base leading-relaxed text-slate-800">
+              <div className="space-y-3 text-base leading-relaxed text-white drop-shadow">
                 {insight.split(/\n+/).map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
                 ))}
@@ -173,17 +173,17 @@ export const AiInsightPanel = ({ data, summaries, isQueryLoading }: AiInsightPan
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
               <span className="text-6xl opacity-20">🤖</span>
-              <p className="text-lg font-medium text-slate-600">
+              <p className="text-lg font-medium text-white drop-shadow">
                 {data
-                  ? "Click the button above to get instant farming advice!"
+                  ? "Click the button above to get AI insights!"
                   : "📍 First, select a location and date on the map above"}
               </p>
             </div>
           )}
         </div>
 
-        <div className="rounded-lg bg-slate-100 p-3 text-xs text-slate-600">
-          <strong>How it works:</strong> Our AI analyzes the NASA weather data above and gives you personalized farming recommendations in plain language. 
+        <div className="rounded-lg bg-white/5 p-3 text-xs text-white/80 backdrop-blur">
+          <strong className="text-white">How it works:</strong> Our AI analyzes the NASA weather data above and gives you personalized insights in plain language. 
           Responses are based on 40+ years of historical patterns, not forecasts.
         </div>
       </div>

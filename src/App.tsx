@@ -160,34 +160,34 @@ function App() {
             </div>
 
             {/* Step 1: Map */}
-            <div className="rounded-3xl border border-white/20 bg-white/95 p-6 shadow-2xl backdrop-blur-sm">
+            <div className="rounded-3xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-xl">
               <div className="mb-4 flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-nasa-blue to-blue-600 text-lg font-bold text-white shadow-lg">1</span>
-                <h2 className="text-2xl font-bold text-nasa-blue">Choose Location</h2>
+                <h2 className="text-2xl font-bold text-white drop-shadow-lg">Choose Location</h2>
               </div>
               <MapSelector lat={lat} lon={lon} onChange={handleMapChange} />
             </div>
 
             {/* Step 2: Date & Conditions */}
-            <div className="rounded-3xl border border-white/20 bg-white/95 p-6 shadow-2xl backdrop-blur-sm">
+            <div className="rounded-3xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-xl">
               <div className="mb-6 flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-nasa-blue to-blue-600 text-lg font-bold text-white shadow-lg">2</span>
-                <h2 className="text-2xl font-bold text-nasa-blue">Select Date & Weather Risks</h2>
+                <h2 className="text-2xl font-bold text-white drop-shadow-lg">Select Date & Weather Risks</h2>
               </div>
               
               <div className="grid gap-6 lg:grid-cols-2">
                 {/* Date Picker */}
                 <div className="space-y-3">
-                  <label className="block text-sm font-semibold text-nasa-blue">
+                  <label className="block text-sm font-semibold text-white drop-shadow">
                     📅 Target Date
                   </label>
                   <input
                     type="date"
-                    className="w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-base font-medium text-slate-900 shadow-sm transition focus:border-nasa-blue focus:outline-none focus:ring-2 focus:ring-nasa-blue/20"
+                    className="w-full rounded-xl border-2 border-white/20 bg-white/10 px-4 py-3 text-base font-medium text-white shadow-sm transition focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 backdrop-blur"
                     value={formatDateForInput(dateOfYear)}
                     onChange={(event) => setDateOfYear(parseDateOfYear(event.target.value))}
                   />
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-blue-200">
                     💡 We analyze ±3 days around this date for robust statistics
                   </p>
                 </div>
