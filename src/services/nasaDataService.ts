@@ -7,11 +7,17 @@ const buildQueryPayload = (
   dateOfYear: string,
   conditions: WeatherConditionKey[],
   locationName?: string
-): WeatherQueryInput => ({
-  location: { lat, lon, name: locationName },
-  date_of_year: dateOfYear,
-  conditions
-});
+): WeatherQueryInput => {
+  // Convert YYYY-MM-DD to MM-DD for backend compatibility
+  const parts = dateOfYear.split("-");
+  const formattedDate = parts.length === 3 ? `${parts[1]}-${parts[2]}` : dateOfYear;
+  
+  return {
+    location: { lat, lon, name: locationName },
+    date_of_year: formattedDate,
+    conditions
+  };
+};
 
 export const queryWeatherRisk = async (
   lat: number,
