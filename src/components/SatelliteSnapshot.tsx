@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 
 const GIBS_WMS_ENDPOINT = "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi";
 const GIBS_LAYER = "MODIS_Terra_CorrectedReflectance_TrueColor";
@@ -13,12 +13,11 @@ type FetchState = "idle" | "loading" | "success" | "error";
 
 const toIsoDate = (dateOfYear: string): string => {
   const [month, day] = dateOfYear.split("-");
-  // Use current year so imagery feels recent. Fallback to 2024 if parsing fails.
   const year = new Date().getFullYear();
   if (!month || !day) {
-    return `${year}-07-01`;
+    return `-07-01`;
   }
-  return `${year}-${month}-${day}`;
+  return `--`;
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -31,7 +30,7 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
   const requestUrl = useMemo(() => {
     if (lat == null || lon == null) return undefined;
 
-    const bboxPadding = 2.5; // degrees around the chosen point
+    const bboxPadding = 2.5;
     const minLat = clamp(lat - bboxPadding, -90, 90);
     const maxLat = clamp(lat + bboxPadding, -90, 90);
     const minLon = clamp(lon - bboxPadding, -180, 180);
@@ -43,7 +42,7 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
       REQUEST: "GetMap",
       LAYERS: GIBS_LAYER,
       SRS: "EPSG:4326",
-      BBOX: `${minLon},${minLat},${maxLon},${maxLat}`,
+      BBOX: `,,,`,
       WIDTH: "640",
       HEIGHT: "640",
       FORMAT: "image/png",
@@ -51,7 +50,7 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
       TIME: toIsoDate(dateOfYear)
     });
 
-    return `${GIBS_WMS_ENDPOINT}?${query.toString()}`;
+    return `?`;
   }, [lat, lon, dateOfYear]);
 
   useEffect(() => {
@@ -68,7 +67,7 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
       try {
         const response = await fetch(requestUrl, { signal: controller.signal });
         if (!response.ok) {
-          throw new Error(`GIBS WMS request failed (${response.status})`);
+          throw new Error(`GIBS WMS request failed ()`);
         }
         const blob = await response.blob();
         const objectUrl = URL.createObjectURL(blob);
@@ -93,51 +92,47 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
 
   if (!requestUrl) {
     return (
-      <section className="rounded-2xl border border-white/60 bg-white/70 p-6 text-sm text-slate-600 shadow-sm ring-1 ring-inset ring-slate-200/60 backdrop-blur">
-        Drop a pin to unlock a recent MODIS satellite snapshot from NASA GIBS.
-      </section>
+      <div className="flex aspect-square items-center justify-center rounded-xl border border-white/20 bg-white/5 p-6 text-center backdrop-blur">
+        <div>
+          <span className="mb-2 block text-3xl"></span>
+          <p className="text-xs text-white/60">Select location on map</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-lg ring-1 ring-slate-200/60 backdrop-blur">
-      <header className="flex items-center justify-between border-b border-slate-200/60 px-6 py-4">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-800">Satellite snapshot</h2>
-          <p className="text-xs text-slate-500">MODIS Terra True Color • NASA GIBS WMS</p>
+    <div className="overflow-hidden rounded-xl border border-white/20 bg-white/5 backdrop-blur">
+      {status === "loading" && (
+        <div className="flex aspect-square items-center justify-center bg-slate-900/50">
+          <div className="text-center">
+            <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+            <p className="text-xs text-white/60">Loading satellite...</p>
+          </div>
         </div>
-        <time className="text-xs font-medium text-slate-600" dateTime={toIsoDate(dateOfYear)}>
-          {toIsoDate(dateOfYear)}
-        </time>
-      </header>
-      <div className="relative aspect-square bg-slate-100">
-        {status === "loading" && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-10 w-10 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+      )}
+      {status === "error" && (
+        <div className="flex aspect-square flex-col items-center justify-center gap-2 p-6 text-center">
+          <span className="text-3xl"></span>
+          <p className="text-xs text-white/80">Could not load imagery</p>
+          {error && <p className="text-xs text-white/50">{error}</p>}
+        </div>
+      )}
+      {status === "success" && imageUrl && (
+        <div className="relative aspect-square">
+          <img 
+            src={imageUrl} 
+            alt="NASA MODIS Terra satellite" 
+            className="h-full w-full object-cover" 
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+            <p className="text-xs font-semibold text-white drop-shadow">
+              {toIsoDate(dateOfYear)}
+            </p>
+            <p className="text-xs text-white/70 drop-shadow">MODIS Terra</p>
           </div>
-        )}
-        {status === "error" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center text-sm text-slate-600">
-            <span className="text-lg">🛰️</span>
-            <p>We couldn’t retrieve MODIS imagery for this date window.</p>
-            {error && <p className="text-xs text-slate-500">{error}</p>}
-          </div>
-        )}
-        {status === "success" && imageUrl && (
-          <img src={imageUrl} alt="NASA MODIS Terra true-color snapshot" className="h-full w-full object-cover" />
-        )}
-      </div>
-      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/60 px-6 py-3 text-[11px] text-slate-500">
-        <span>Imagery: NASA Global Imagery Browse Services (GIBS)</span>
-        <a
-          href="https://gibs.earthdata.nasa.gov/"
-          target="_blank"
-          rel="noreferrer"
-          className="font-medium text-brand-dark hover:text-brand"
-        >
-          Learn about GIBS
-        </a>
-      </footer>
-    </section>
+        </div>
+      )}
+    </div>
   );
 };

@@ -68,114 +68,93 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
   }
 
   return (
-    <section className="space-y-6">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-800">Historical outlook</h2>
-            <p className="text-sm text-slate-500">
-              {data.query.location.name ?? "Selected location"} · {data.query.date_of_year}
-            </p>
-          </div>
-          <div className="text-xs text-slate-500 text-right space-y-1">
-            <p>{data.metadata.data_source}</p>
-            <p>{data.metadata.time_range}</p>
-            {data.metadata.dataset_name && <p>Dataset: {data.metadata.dataset_name}</p>}
-            {typeof data.metadata.window_days !== "undefined" && (
-              <p>Window ±{data.metadata.window_days} days</p>
-            )}
-            {typeof data.metadata.samples !== "undefined" && <p>{data.metadata.samples} samples</p>}
-            {data.metadata.grid_point && (
-              <p>
-                Grid cell {data.metadata.grid_point.lat.toFixed(2)}, {" "}
-                {data.metadata.grid_point.lon.toFixed(2)}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <dl className="mt-6 grid gap-4 sm:grid-cols-2">
-          {(Object.entries(data.results) as Array<[
-            WeatherConditionKey,
-            (typeof data.results)[WeatherConditionKey]
-          ]>).map(([condition, result]) => {
-            if (!result || result.probability_percent == null) return null;
-            const meta = conditionDisplay(condition);
-            const palette = probabilityPalette(result.probability_percent);
-            return (
-              <div
-                key={condition}
-                className="group relative overflow-hidden rounded-2xl border border-white/20 bg-white/5 p-5 shadow-sm backdrop-blur-sm transition hover:-translate-y-0.5 hover:shadow-lg"
-              >
-                <div
-                  aria-hidden
-                  className={clsx(
-                    "pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity group-hover:opacity-20",
-                    meta.gradient
-                  )}
-                />
-                <div className="relative flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={clsx(
-                        "flex h-10 w-10 items-center justify-center rounded-full text-xl shadow-inner",
-                        meta.softBg,
-                        meta.text
-                      )}
-                      aria-hidden
-                    >
-                      {meta.icon}
-                    </span>
-                    <dt className="text-base font-semibold text-white drop-shadow">{meta.label}</dt>
-                  </div>
-                  <RiskGauge
-                    value={result.probability_percent}
-                    strokeClass={palette.stroke}
-                    label={meta.label}
-                  />
-                </div>
-                <dd className="relative mt-3 space-y-3 text-sm text-blue-100">
+    <div className="space-y-4">
+      {/* Compact Risk Cards Grid */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {(Object.entries(data.results) as Array<[
+          WeatherConditionKey,
+          (typeof data.results)[WeatherConditionKey]
+        ]>).map(([condition, result]) => {
+          if (!result || result.probability_percent == null) return null;
+          const meta = conditionDisplay(condition);
+          const palette = probabilityPalette(result.probability_percent);
+          return (
+            <div
+              key={condition}
+              className="group relative overflow-hidden rounded-xl border border-white/20 bg-white/5 p-4 shadow-lg backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-white/40"
+            >
+              {/* Icon & Title */}
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <span
                     className={clsx(
-                      "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white drop-shadow",
-                      palette.badge
+                      "flex h-8 w-8 items-center justify-center rounded-lg text-lg shadow-md",
+                      meta.softBg,
+                      meta.text
                     )}
                   >
-                    {result.probability_percent}% historical likelihood
+                    {meta.icon}
                   </span>
-                  {result.threshold && (
-                    <p className="text-white drop-shadow">
-                      Threshold: <strong>{result.threshold.value}</strong> {result.threshold.unit}
-                    </p>
-                  )}
-                  {result.trend && <p className="font-medium text-blue-200 drop-shadow">Trend: {result.trend}</p>}
-                  {result.description && (
-                    <p className="text-xs text-blue-200/80">{result.description}</p>
-                  )}
-                </dd>
+                  <h3 className="text-sm font-bold text-white drop-shadow">{meta.label}</h3>
+                </div>
+                <RiskGauge
+                  value={result.probability_percent}
+                  strokeClass={palette.stroke}
+                  label={meta.label}
+                />
               </div>
-            );
-          })}
-        </dl>
+
+              {/* Probability */}
+              <div className="mb-2">
+                <span
+                  className={clsx(
+                    "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white drop-shadow",
+                    palette.badge
+                  )}
+                >
+                  {result.probability_percent}% chance
+                </span>
+              </div>
+
+              {/* Details (compact) */}
+              <div className="space-y-1 text-xs text-white/80">
+                {result.threshold && (
+                  <p>Threshold: {result.threshold.value} {result.threshold.unit}</p>
+                )}
+                {result.trend && (
+                  <p className="flex items-center gap-1 text-blue-200">
+                    <span>📈</span>
+                    <span className="truncate">{result.trend}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Progress bar */}
+              <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className={clsx("h-full transition-all duration-500", palette.badge)}
+                  style={{ width: `${result.probability_percent}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
+      {/* Plain Language Summary (if exists) */}
       {summaries.length > 0 && (
-        <div className="rounded-2xl border border-nasa-blue/30 bg-nasa-blue/10 p-6 shadow-sm backdrop-blur-xl">
-          <h3 className="text-base font-semibold text-white drop-shadow-lg">Plain-language summary</h3>
-          <ul className="mt-4 space-y-2 text-sm text-blue-100">
+        <div className="rounded-xl border border-nasa-blue/30 bg-nasa-blue/10 p-4 backdrop-blur-xl">
+          <h3 className="mb-3 text-sm font-semibold text-white drop-shadow">Summary</h3>
+          <div className="space-y-2">
             {summaries.map((summary) => (
-              <li key={summary.label} className="flex items-start gap-2">
-                <span className="mt-1 inline-block h-2.5 w-2.5 rounded-full bg-nasa-blue" aria-hidden />
-                <div>
-                  <p className="font-medium text-white drop-shadow">{summary.label}</p>
-                  <p className="text-sm text-blue-100">{summary.friendlyMessage}</p>
-                  {summary.trend && <p className="text-xs text-blue-200/70">Trend: {summary.trend}</p>}
-                </div>
-              </li>
+              <div key={summary.label} className="flex items-start gap-2 text-xs">
+                <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-nasa-blue" />
+                <p className="flex-1 text-blue-100">{summary.friendlyMessage}</p>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       )}
-    </section>
+    </div>
   );
 };
