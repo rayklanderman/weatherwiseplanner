@@ -28,6 +28,7 @@ interface Message {
 export const AiChatPanel = ({ 
   data, 
   summaries, 
+  isQueryLoading,
   lat,
   lon,
   locationName,
@@ -52,19 +53,33 @@ export const AiChatPanel = ({
     scrollToBottom();
   }, [messages]);
 
-  // Welcome message when data loads
+  // Welcome/Update message when data loads or location changes
   useEffect(() => {
-    if (data && messages.length === 0) {
+    if (data) {
       const location = locationName || `${lat?.toFixed(2)}°, ${lon?.toFixed(2)}°`;
-      setMessages([
-        {
+      const welcomeMsg = `🛰️ NASA Data Loaded for **${location}** on **${dateOfYear}**\n\nI'm your AI assistant powered by Groq. Ask me anything about the weather patterns, risks, or planning advice!`;
+      
+      // If no messages, add welcome message
+      if (messages.length === 0) {
+        setMessages([{
           role: "system",
-          content: `🛰️ NASA Data Loaded for **${location}** on **${dateOfYear}**\n\nI'm your AI assistant powered by Groq. Ask me anything about the weather patterns, risks, or planning advice!`,
+          content: welcomeMsg,
           timestamp: new Date()
+        }]);
+      } 
+      // If location changed, add update notification
+      else {
+        const lastSystemMsg = messages.find(m => m.role === "system");
+        if (!lastSystemMsg || !lastSystemMsg.content.includes(location)) {
+          setMessages(prev => [...prev, {
+            role: "system",
+            content: `📍 **Location Updated:** Now analyzing data for **${location}** on **${dateOfYear}**`,
+            timestamp: new Date()
+          }]);
         }
-      ]);
+      }
     }
-  }, [data, lat, lon, locationName, dateOfYear, messages.length]);
+  }, [data, lat, lon, locationName, dateOfYear, messages]);
 
   // Handle AI response
   useEffect(() => {
@@ -289,7 +304,11 @@ export const AiChatPanel = ({
             <div className="flex items-center gap-1.5">
               <span className="text-sm">📍</span>
               <span className="text-xs font-semibold text-white">
-                {locationName || `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`}
+                {isQueryLoading ? (
+                  <span className="animate-pulse">Loading...</span>
+                ) : (
+                  locationName || `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`
+                )}
               </span>
             </div>
             <div className="h-4 w-px bg-white/30" />
@@ -297,9 +316,17 @@ export const AiChatPanel = ({
               <span className="text-sm">📅</span>
               <span className="text-xs text-blue-200">{dateOfYear}</span>
             </div>
-            <div className="ml-auto text-xs text-blue-300">
-              ← Select location on map
-            </div>
+            {isQueryLoading && (
+              <div className="ml-auto flex items-center gap-1.5 text-xs text-yellow-300">
+                <div className="h-2 w-2 animate-bounce rounded-full bg-yellow-400"></div>
+                Fetching new data...
+              </div>
+            )}
+            {!isQueryLoading && (
+              <div className="ml-auto text-xs text-blue-300">
+                ← Select location on map
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -413,12 +440,12 @@ export const AiChatPanel = ({
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={data ? "Ask anything about the weather data..." : "Select a location first..."}
-            disabled={!data || isLoading}
+            disabled={!data || isLoading || isQueryLoading}
             className="flex-1 rounded-xl border-2 border-white/20 bg-white/90 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-nasa-blue focus:outline-none focus:ring-2 focus:ring-nasa-blue/20 disabled:bg-white/50"
           />
           <button
             onClick={handleSend}
-            disabled={!data || !input.trim() || isLoading}
+            disabled={!data || !input.trim() || isLoading || isQueryLoading}
             className="rounded-xl bg-gradient-to-r from-nasa-red to-orange-600 px-6 py-3 font-bold text-white shadow-lg transition hover:scale-105 hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {isLoading ? "..." : "Send"}
