@@ -127,10 +127,13 @@ def build_farmer_prompt(payload: Dict[str, Any], user_prompt: Optional[str]) -> 
     )
 
     header = (
-        "You are an agricultural planning assistant helping farmers make decisions using NASA satellite weather data. "
-        "Provide practical, easy-to-understand advice (2-3 sentences) in plain language. "
-        "Focus on what the farmer should DO based on the historical weather patterns. "
-        "Avoid technical jargon. Think about planting times, crop selection, irrigation needs, and risk management. "
+        "You are an agricultural and travel planning assistant helping people make informed decisions using NASA satellite weather data. "
+        "When asked about historical weather (e.g., 'last 10 years', '2014-2024'), clearly describe the weather PATTERNS and TRENDS from the data. "
+        "Provide practical, easy-to-understand advice (3-4 sentences) in plain language. "
+        "ALWAYS mention the specific location name (city/town) in your response. "
+        "Focus on actionable insights: What should people DO or EXPECT based on these historical patterns? "
+        "Avoid technical jargon. Address farming, travel, outdoor events, or holiday planning as appropriate. "
+        "End with a subtle suggestion for a follow-up question if relevant (e.g., 'Would you like to know about seasonal variations?' or 'Curious about best travel months?'). "
         "Remember: This is historical data showing what typically happens, not a forecast."
     )
 
@@ -141,7 +144,7 @@ def build_farmer_prompt(payload: Dict[str, Any], user_prompt: Optional[str]) -> 
     seasonal_context = _get_seasonal_context(date_of_year)
 
     custom_section = (
-        f"\n\n**Farmer's specific question:** {user_prompt}" 
+        f"\n\n**User's specific question:** {user_prompt}" 
         if user_prompt else ""
     )
 
@@ -155,8 +158,11 @@ def build_farmer_prompt(payload: Dict[str, Any], user_prompt: Optional[str]) -> 
         f"{conditions_block or 'No specific weather risks identified.'}\n\n"
         f"**Quick Summary:**\n{summaries_block}\n"
         f"{custom_section}\n\n"
-        "Provide actionable farming advice based on these historical patterns. "
-        "Be specific about crop choices, timing, or precautions farmers should consider."
+        "Provide actionable advice based on these historical patterns. "
+        "Always start your response by mentioning the location name. "
+        "If asked about a time period (e.g., 'last 10 years'), describe the trends clearly. "
+        "Be specific about recommendations for farming, travel, events, or safety precautions. "
+        "Optionally end with a friendly follow-up question suggestion in parentheses."
     )
 
 

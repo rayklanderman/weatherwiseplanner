@@ -249,12 +249,24 @@ export const AiChatPanel = ({
     }
   };
 
-  const suggestedQuestions = [
-    "What are the main weather risks for this location?",
-    "Is this suitable for outdoor events?",
-    "Should I be concerned about extreme temperatures?",
-    "What's the probability of heavy rainfall?",
+  // Dynamic suggestions based on whether user has asked questions
+  const hasUserAskedQuestion = messages.some(m => m.role === "user");
+  
+  const initialSuggestions = [
+    "How has the weather been over the last 10 years (2014-2024)?",
+    "What are the main climate risks for this location?",
+    "Is this location suitable for farming activities?",
+    "Should I be concerned about extreme weather events?",
   ];
+
+  const followUpSuggestions = [
+    "Is this weather pattern suitable for outdoor events?",
+    "What's the best time of year to visit for holidays?",
+    "How reliable is rainfall for agriculture here?",
+    "What crops would thrive in this climate?",
+  ];
+
+  const suggestedQuestions = hasUserAskedQuestion ? followUpSuggestions : initialSuggestions;
 
   const handleSuggestion = async (question: string) => {
     setInput(question);
@@ -413,10 +425,12 @@ export const AiChatPanel = ({
         )}
       </div>
 
-      {/* Suggested Questions */}
-      {data && !messages.some(m => m.role === "user") && (
+      {/* Suggested Questions - Always visible to guide user */}
+      {data && !isLoading && (
         <div className="border-t border-white/20 bg-white/5 px-6 py-3 backdrop-blur">
-          <p className="mb-2 text-xs font-semibold text-white/90">💡 Suggested questions:</p>
+          <p className="mb-2 text-xs font-semibold text-white/90">
+            💡 {hasUserAskedQuestion ? 'Follow-up suggestions:' : 'Suggested questions:'}
+          </p>
           <div className="flex flex-wrap gap-2">
             {suggestedQuestions.map((q, idx) => (
               <button
