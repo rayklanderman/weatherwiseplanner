@@ -12,14 +12,12 @@ interface SatelliteSnapshotProps {
 type FetchState = "idle" | "loading" | "success" | "error";
 
 const toIsoDate = (dateOfYear: string): string => {
-  const [month, day] = dateOfYear.split("-");
-  // NASA GIBS has data up to ~yesterday, not current year necessarily
-  // Use previous year for more reliable imagery availability
-  const year = new Date().getFullYear() - 1; // 2024 has full data
-  if (!month || !day) {
-    return `${year}-07-01`;
+  // dateOfYear is already in YYYY-MM-DD format from the date picker
+  // Just return it directly - no need to manipulate
+  if (!dateOfYear || dateOfYear.split('-').length !== 3) {
+    return '2024-07-01'; // Fallback to a safe date
   }
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  return dateOfYear;
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);

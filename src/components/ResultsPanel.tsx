@@ -141,20 +141,29 @@ export const ResultsPanel = ({ isLoading, error, data, summaries }: ResultsPanel
         })}
       </div>
 
-      {/* Plain Language Summary (if exists) */}
+      {/* Plain Language Summary - Appears AFTER risk cards */}
       {summaries.length > 0 && (
-        <div className="rounded-xl border border-nasa-blue/30 bg-nasa-blue/10 p-4 backdrop-blur-xl">
-          <h3 className="mb-3 text-sm font-semibold text-white drop-shadow">Summary</h3>
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 backdrop-blur-xl">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-lg">💬</span>
+            <h3 className="text-sm font-semibold text-white drop-shadow">Plain Language Summary</h3>
+          </div>
           <div className="space-y-2">
             {summaries.map((summary) => (
-              <div key={summary.label} className="flex items-start gap-2 text-xs">
-                <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-nasa-blue" />
-                <p className="flex-1 text-blue-100">{summary.friendlyMessage}</p>
+              <div key={summary.label} className="rounded-lg bg-white/5 p-3">
+                <p className="mb-1 text-sm font-semibold text-white">{summary.label}</p>
+                <p className="text-xs text-blue-100">{summary.friendlyMessage}</p>
+                {summary.trend && (
+                  <p className="mt-1 text-xs text-emerald-300">
+                    <span className="font-medium">Trend:</span> {summary.trend}
+                  </p>
+                )}
               </div>
             ))}
           </div>
         </div>
       )}
+
     </div>
   );
 };

@@ -172,10 +172,12 @@ function App() {
                 <input
                   type="date"
                   className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur transition focus:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/20"
+                  min="2018-01-01"
+                  max="2024-12-31"
                   value={formatDateForInput(dateOfYear)}
                   onChange={(event) => setDateOfYear(parseDateOfYear(event.target.value))}
                 />
-                <p className="mt-1 text-xs text-blue-200">±3 days analyzed</p>
+                <p className="mt-1 text-xs text-blue-200">Data available: 2018-2024</p>
               </div>
 
               <div>
@@ -200,27 +202,37 @@ function App() {
           <ResultsPanel isLoading={isLoading} error={error} data={data} summaries={summaries} />
         </div>
 
-        {/* Bottom Row: Summary & Historical Trends */}
+        {/* Bottom Row: Data Quality & Historical Trends */}
         <div className="grid gap-4 lg:grid-cols-2">
           
-          {/* Plain Language Summary */}
-          {summaries.length > 0 && (
+          {/* NASA Data Quality & Attribution */}
+          {data && (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
               <div className="mb-3 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20 text-lg">💬</div>
-                <h2 className="text-lg font-bold text-white">Summary</h2>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-nasa-red/20 text-lg">�️</div>
+                <h2 className="text-lg font-bold text-white">Data Quality</h2>
               </div>
-              <div className="space-y-2">
-                {summaries.map((summary) => (
-                  <div key={summary.label} className="flex items-start gap-2 rounded-lg bg-white/5 p-3">
-                    <span className="mt-1 inline-block h-2 w-2 rounded-full bg-emerald-400" />
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-white">{summary.label}</p>
-                      <p className="text-xs text-blue-100">{summary.friendlyMessage}</p>
-                      {summary.trend && <p className="text-xs text-blue-200/70">Trend: {summary.trend}</p>}
-                    </div>
-                  </div>
-                ))}
+              <div className="space-y-3">
+                <div className="rounded-lg bg-white/5 p-3">
+                  <p className="mb-1 text-xs font-semibold text-nasa-red">Data Source</p>
+                  <p className="text-sm text-white">NASA MERRA-2 Reanalysis</p>
+                  <p className="text-xs text-blue-200/70">Modern-Era Retrospective analysis for Research and Applications, Version 2</p>
+                </div>
+                <div className="rounded-lg bg-white/5 p-3">
+                  <p className="mb-1 text-xs font-semibold text-nasa-red">Analysis Period</p>
+                  <p className="text-sm text-white">{dateOfYear} ± 3 days</p>
+                  <p className="text-xs text-blue-200/70">Historical data: 1980-2024</p>
+                </div>
+                <div className="rounded-lg bg-white/5 p-3">
+                  <p className="mb-1 text-xs font-semibold text-nasa-red">Resolution</p>
+                  <p className="text-sm text-white">0.5° × 0.625° (≈50km)</p>
+                  <p className="text-xs text-blue-200/70">Hourly temporal resolution</p>
+                </div>
+                <div className="rounded-lg bg-white/5 p-3">
+                  <p className="mb-1 text-xs font-semibold text-nasa-red">Attribution</p>
+                  <p className="text-xs text-blue-200">Global Modeling and Assimilation Office (GMAO)</p>
+                  <p className="text-xs text-blue-200/70">NASA Goddard Space Flight Center</p>
+                </div>
               </div>
             </div>
           )}

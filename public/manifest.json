@@ -1,0 +1,48 @@
+{
+  "name": "WeatherWise Planner",
+  "short_name": "WeatherWise",
+  "description": "Plan smarter with 40+ years of NASA satellite data. Get AI-powered weather insights and risk analysis.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B3D91",
+  "theme_color": "#0B3D91",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["weather", "productivity", "education"],
+  "screenshots": [
+    {
+      "src": "/preview.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Analysis",
+      "short_name": "Analyze",
+      "description": "Start a new weather risk analysis",
+      "url": "/",
+      "icons": [{ "src": "/favicon.svg", "sizes": "96x96" }]
+    }
+  ]
+}
