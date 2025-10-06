@@ -14,7 +14,7 @@
     "defaultDate": "2024-07-15"
   },
   "data": {
-    "demoMode": true,
+    "demoMode": false,
     "attribution": "Data provided by NASA Earth Observing System Data and Information System (EOSDIS) via GES DISC",
     "sourceUrl": "https://disc.gsfc.nasa.gov/"
   }
