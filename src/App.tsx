@@ -44,6 +44,7 @@ function App() {
   });
   const [conditions, setConditions] = useState<WeatherConditionKey[]>(defaultConditions);
   const [activeCondition, setActiveCondition] = useState<WeatherConditionKey | null>(null);
+  const [aiInsights, setAiInsights] = useState<string | undefined>(); // NEW: Track AI insights for export
 
   useEffect(() => {
     if (geo.lat != null && geo.lon != null) {
@@ -99,7 +100,7 @@ function App() {
             <div className="hidden rounded-lg bg-white/5 px-3 py-1.5 backdrop-blur lg:block">
               <p className="text-xs text-blue-200">📍 {locationName || `${lat?.toFixed(1)}°, ${lon?.toFixed(1)}°`}</p>
             </div>
-            <ExportButton data={data} />
+            <ExportButton data={data} aiInsights={aiInsights} />
           </div>
         </div>
       </nav>
@@ -128,6 +129,9 @@ function App() {
                 }}
                 onConditionsChange={(newConditions) => {
                   setConditions(newConditions);
+                }}
+                onAiInsightChange={(insight) => {
+                  setAiInsights(insight); // Track AI insights for export
                 }}
               />
             </div>

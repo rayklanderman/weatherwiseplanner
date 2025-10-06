@@ -11,13 +11,19 @@ const downloadFile = (data: BlobPart, filename: string, mimeType: string) => {
   URL.revokeObjectURL(link.href);
 };
 
-export const exportAsJSON = (payload: WeatherQueryResponse) => {
+export const exportAsJSON = (payload: WeatherQueryResponse, aiInsights?: string) => {
   const timestamp = new Date().toISOString().split("T")[0];
   const filename = `weatherwise_${payload.query.date_of_year.replace("-", "")}_${timestamp}.json`;
-  downloadFile(JSON.stringify(payload, null, 2), filename, "application/json");
+  
+  // Include AI insights if available
+  const exportData = aiInsights 
+    ? { ...payload, ai_insights: aiInsights }
+    : payload;
+  
+  downloadFile(JSON.stringify(exportData, null, 2), filename, "application/json");
 };
 
-export const exportAsCSV = (payload: WeatherQueryResponse) => {
+export const exportAsCSV = (payload: WeatherQueryResponse, aiInsights?: string) => {
   const { query, results, metadata } = payload;
   const header = [
     "condition",
@@ -56,6 +62,12 @@ export const exportAsCSV = (payload: WeatherQueryResponse) => {
     `query_location_lon,${query.location.lon}`,
     `query_date_of_year,${query.date_of_year}`
   ].filter(Boolean) as string[];
+
+  // Add AI insights if available (properly escaped for CSV)
+  if (aiInsights) {
+    const escapedInsights = aiInsights.replace(/"/g, '""'); // Escape quotes for CSV
+    metadataLines.push("", `ai_insights,"${escapedInsights}"`);
+  }
 
   const csvContent = [header.join(","), ...(rows as string[]), ...metadataLines].join("\n");
   const timestamp = new Date().toISOString().split("T")[0];

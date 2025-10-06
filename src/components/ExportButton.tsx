@@ -6,9 +6,10 @@ import { WeatherQueryResponse } from "../types/weather";
 
 interface ExportButtonProps {
   data?: WeatherQueryResponse;
+  aiInsights?: string;
 }
 
-export const ExportButton = ({ data }: ExportButtonProps) => {
+export const ExportButton = ({ data, aiInsights }: ExportButtonProps) => {
   if (!data) return null;
 
   return (
@@ -32,7 +33,7 @@ export const ExportButton = ({ data }: ExportButtonProps) => {
               <button
                 type="button"
                 className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-base font-semibold ${active ? "bg-emerald-50 text-emerald-900" : "text-slate-700"}`}
-                onClick={() => exportAsCSV(data)}
+                onClick={() => exportAsCSV(data, aiInsights)}
               >
                 <span className="text-2xl">📊</span>
                 <div>
@@ -47,7 +48,7 @@ export const ExportButton = ({ data }: ExportButtonProps) => {
               <button
                 type="button"
                 className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-base font-semibold ${active ? "bg-emerald-50 text-emerald-900" : "text-slate-700"}`}
-                onClick={() => exportAsJSON(data)}
+                onClick={() => exportAsJSON(data, aiInsights)}
               >
                 <span className="text-2xl">💾</span>
                 <div>

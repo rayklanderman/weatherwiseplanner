@@ -16,6 +16,7 @@ interface AiChatPanelProps {
   onLocationChange?: (lat: number, lon: number, name: string) => void;
   onDateChange?: (date: string) => void;
   onConditionsChange?: (conditions: WeatherConditionKey[]) => void;
+  onAiInsightChange?: (insight: string) => void; // NEW: Track AI insights for export
 }
 
 interface Message {
@@ -33,7 +34,8 @@ export const AiChatPanel = ({
   dateOfYear,
   onLocationChange,
   onDateChange,
-  onConditionsChange
+  onConditionsChange,
+  onAiInsightChange
 }: AiChatPanelProps) => {
   const { insight, isLoading, error, generateInsight, reset } = useAiInsights();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -72,9 +74,15 @@ export const AiChatPanel = ({
         content: insight,
         timestamp: new Date()
       }]);
+      
+      // Notify parent component of new AI insight for export
+      if (onAiInsightChange) {
+        onAiInsightChange(insight);
+      }
+      
       reset();
     }
-  }, [insight, messages, reset]);
+  }, [insight, messages, reset, onAiInsightChange]);
 
   const handleSend = async () => {
     const trimmed = input.trim();

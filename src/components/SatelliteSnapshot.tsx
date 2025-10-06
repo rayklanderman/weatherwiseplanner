@@ -13,11 +13,13 @@ type FetchState = "idle" | "loading" | "success" | "error";
 
 const toIsoDate = (dateOfYear: string): string => {
   const [month, day] = dateOfYear.split("-");
-  const year = new Date().getFullYear();
+  // NASA GIBS has data up to ~yesterday, not current year necessarily
+  // Use previous year for more reliable imagery availability
+  const year = new Date().getFullYear() - 1; // 2024 has full data
   if (!month || !day) {
     return `${year}-07-01`;
   }
-  return `${year}-${month}-${day}`;
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -26,6 +28,7 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
   const [imageUrl, setImageUrl] = useState<string>();
   const [status, setStatus] = useState<FetchState>("idle");
   const [error, setError] = useState<string>();
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const requestUrl = useMemo(() => {
     if (lat == null || lon == null) return undefined;
@@ -94,8 +97,9 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
     return (
       <div className="flex aspect-square items-center justify-center rounded-xl border border-white/20 bg-white/5 p-6 text-center backdrop-blur">
         <div>
-          <span className="mb-2 block text-3xl"></span>
+          <span className="mb-2 block text-3xl">🛰️</span>
           <p className="text-xs text-white/60">Select location on map</p>
+          <p className="mt-1 text-[10px] text-white/40">NASA GIBS • Optional</p>
         </div>
       </div>
     );
@@ -103,34 +107,78 @@ export const SatelliteSnapshot = ({ lat, lon, dateOfYear }: SatelliteSnapshotPro
 
   return (
     <div className="overflow-hidden rounded-xl border border-white/20 bg-white/5 backdrop-blur">
-      {status === "loading" && (
-        <div className="flex aspect-square items-center justify-center bg-slate-900/50">
-          <div className="text-center">
-            <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-            <p className="text-xs text-white/60">Loading satellite...</p>
-          </div>
+          {/* Collapsible Header */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex w-full items-center justify-between border-b border-white/10 p-3 text-left transition hover:bg-white/5"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-sm">🛰️</span>
+          <span className="text-xs font-semibold text-white">Satellite View</span>
+          <span className="text-[10px] text-white/40">(Optional)</span>
         </div>
-      )}
-      {status === "error" && (
-        <div className="flex aspect-square flex-col items-center justify-center gap-2 p-6 text-center">
-          <span className="text-3xl"></span>
-          <p className="text-xs text-white/80">Could not load imagery</p>
-          {error && <p className="text-xs text-white/50">{error}</p>}
-        </div>
-      )}
-      {status === "success" && imageUrl && (
-        <div className="relative aspect-square">
-          <img 
-            src={imageUrl} 
-            alt="NASA MODIS Terra satellite" 
-            className="h-full w-full object-cover" 
-          />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-            <p className="text-xs font-semibold text-white drop-shadow">
-              {toIsoDate(dateOfYear)}
-            </p>
-            <p className="text-xs text-white/70 drop-shadow">MODIS Terra</p>
-          </div>
+        <span className="text-xs text-white/60">{isExpanded ? '▼' : '▶'}</span>
+      </button>
+
+      {isExpanded && (
+        <div>
+          {status === "loading" && (
+            <div className="flex aspect-square items-center justify-center bg-slate-900/50">
+              <div className="text-center">
+                <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+                <p className="text-xs text-white/60">Loading NASA imagery...</p>
+                <p className="mt-1 text-[10px] text-white/40">MODIS Terra • {toIsoDate(dateOfYear)}</p>
+              </div>
+            </div>
+          )}
+          {status === "error" && (
+            <div className="flex aspect-square flex-col items-center justify-center gap-2 p-6 text-center">
+              <span className="text-3xl">🛰️</span>
+              <p className="text-xs font-semibold text-white/80">Imagery unavailable</p>
+              {error && <p className="text-xs text-white/50">{error}</p>}
+              <div className="mt-2 rounded-lg bg-white/5 px-3 py-2">
+                <p className="text-[10px] text-white/60">Date: {toIsoDate(dateOfYear)}</p>
+                <p className="text-[10px] text-white/40">Location: {lat?.toFixed(2)}°, {lon?.toFixed(2)}°</p>
+              </div>
+              <a
+                href={`https://worldview.earthdata.nasa.gov/?v=${lon! - 5},${lat! - 5},${lon! + 5},${lat! + 5}&t=${toIsoDate(dateOfYear)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 rounded-lg bg-nasa-red px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-nasa-red/80"
+              >
+                🌍 Open NASA Worldview
+              </a>
+              <p className="mt-2 text-[10px] text-blue-300">Optional feature - App works without it</p>
+            </div>
+          )}
+          {status === "success" && imageUrl && (
+            <div className="relative aspect-square">
+              <img 
+                src={imageUrl} 
+                alt="NASA MODIS Terra satellite" 
+                className="h-full w-full object-cover" 
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-white drop-shadow">
+                      {toIsoDate(dateOfYear)}
+                    </p>
+                    <p className="text-xs text-white/70 drop-shadow">NASA MODIS Terra</p>
+                  </div>
+                  <a
+                    href={`https://worldview.earthdata.nasa.gov/?v=${lon! - 5},${lat! - 5},${lon! + 5},${lat! + 5}&t=${toIsoDate(dateOfYear)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-lg bg-nasa-red/80 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur transition hover:bg-nasa-red"
+                    title="Open in NASA Worldview"
+                  >
+                    🌍 Worldview
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
