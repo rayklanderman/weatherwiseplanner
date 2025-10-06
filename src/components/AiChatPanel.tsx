@@ -256,8 +256,12 @@ export const AiChatPanel = ({
     "What's the probability of heavy rainfall?",
   ];
 
-  const handleSuggestion = (question: string) => {
+  const handleSuggestion = async (question: string) => {
     setInput(question);
+    // Wait for state to update, then send
+    setTimeout(async () => {
+      await handleSend();
+    }, 50);
   };
 
   return (
@@ -410,7 +414,7 @@ export const AiChatPanel = ({
       </div>
 
       {/* Suggested Questions */}
-      {data && messages.length <= 1 && (
+      {data && !messages.some(m => m.role === "user") && (
         <div className="border-t border-white/20 bg-white/5 px-6 py-3 backdrop-blur">
           <p className="mb-2 text-xs font-semibold text-white/90">💡 Suggested questions:</p>
           <div className="flex flex-wrap gap-2">
